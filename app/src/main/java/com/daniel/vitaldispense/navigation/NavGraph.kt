@@ -7,24 +7,39 @@ import androidx.navigation.compose.composable
 import com.daniel.vitaldispense.features.home.HomeScreen
 import com.daniel.vitaldispense.features.paciente.DetalleMedicamentoScreen
 import com.daniel.vitaldispense.features.paciente.PacienteDashboardScreen
-
-sealed class Screen(val route: String) {
-    object Home : Screen("home")
-    object Patients : Screen("patients")
-    object Dispensers : Screen("dispensers")
-    object Alerts : Screen("alerts")
-    object Settings : Screen("settings")
-    object DetalleMedicamento : Screen("detalle/{medicamentoId}") {
-        fun createRoute(medicamentoId: String) = "detalle/$medicamentoId"
-    }
-}
+import com.daniel.vitaldispense.features.auth.LoginScreen
+import com.daniel.vitaldispense.features.auth.RegisterScreen
 
 @Composable
 fun NavGraph(navController: NavHostController) {
     NavHost(
         navController = navController,
-        startDestination = Screen.Home.route
+        startDestination = Screen.Login.route
     ) {
+        composable(Screen.Login.route) {
+            LoginScreen(
+                onLoginSuccess = {
+                    navController.navigate(Screen.Home.route) {
+                        popUpTo(Screen.Login.route) { inclusive = true }
+                    }
+                },
+                onNavigateToRegister = {
+                    navController.navigate(Screen.Register.route)
+                }
+            )
+        }
+        composable(Screen.Register.route) {
+            RegisterScreen(
+                onRegisterSuccess = {
+                    navController.navigate(Screen.Home.route) {
+                        popUpTo(Screen.Login.route) { inclusive = true }
+                    }
+                },
+                onBackClick = {
+                    navController.popBackStack()
+                }
+            )
+        }
         composable(Screen.Home.route) {
             HomeScreen()
         }

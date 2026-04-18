@@ -24,12 +24,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.daniel.vitaldispense.features.auth.LoginScreen
+import com.daniel.vitaldispense.features.auth.RegisterScreen
 import com.daniel.vitaldispense.features.home.HomeScreen
 import com.daniel.vitaldispense.features.paciente.DetalleMedicamentoScreen
 import com.daniel.vitaldispense.features.paciente.PacienteDashboardScreen
-import com.daniel.vitaldispense.navigation.NavGraph
 import com.daniel.vitaldispense.navigation.Screen
 import com.daniel.vitaldispense.ui.theme.VITALDISPENSE_FINALTheme
+import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,6 +49,11 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MainContent() {
     val navController = rememberNavController()
+    val auth = FirebaseAuth.getInstance()
+    
+    // Verificamos si hay sesión activa para decidir el inicio
+    val startDest = if (auth.currentUser != null) Screen.Home.route else Screen.Login.route
+
     val items = listOf(
         BottomNavItem("Home", Screen.Home.route, Icons.Default.Home),
         BottomNavItem("Pacientes", Screen.Patients.route, Icons.Default.People),
@@ -60,8 +67,11 @@ fun MainContent() {
             val navBackStackEntry by navController.currentBackStackEntryAsState()
             val currentDestination = navBackStackEntry?.destination
             
-            // Solo mostrar BottomBar en pantallas principales, no en detalles
-            val showBottomBar = items.any { it.route == currentDestination?.route }
+            // Solo mostrar BottomBar si el usuario está logueado Y en una pantalla principal
+            val isAuthScreen = currentDestination?.route == Screen.Login.route || 
+                              currentDestination?.route == Screen.Register.route
+            
+            val showBottomBar = !isAuthScreen && items.any { it.route == currentDestination?.route }
 
             if (showBottomBar) {
                 NavigationBar(
@@ -97,21 +107,44 @@ fun MainContent() {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            // Integramos el NavGraph aquí directamente para manejar el padding
             NavHost(
                 navController = navController,
-                startDestination = Screen.Home.route,
+                startDestination = startDest,
                 modifier = Modifier.padding(innerPadding)
             ) {
+                composable(Screen.Login.route) {
+                    LoginScreen(
+                        onLoginSuccess = {
+                            navController.navigate(Screen.Home.route) {
+                                popUpTo(Screen.Login.route) { inclusive = true }
+                            }
+                        },
+                        onNavigateToRegister = {
+                            navController.navigate(Screen.Register.route)
+                        }
+                    )
+                }
+                composable(Screen.Register.route) {
+                    RegisterScreen(
+                        onRegisterSuccess = {
+                            navController.navigate(Screen.Home.route) {
+                                popUpTo(Screen.Login.route) { inclusive = true }
+                            }
+                        },
+                        onBackClick = {
+                            navController.popBackStack()
+                        }
+                    )
+                }
                 composable(Screen.Home.route) { HomeScreen() }
                 composable(Screen.Patients.route) {
                     PacienteDashboardScreen(onMedicamentoClick = { medicamento ->
                         navController.navigate(Screen.DetalleMedicamento.createRoute(medicamento.id))
                     })
                 }
-                composable(Screen.Dispensers.route) { /* TODO: Pantalla Hardware */ }
-                composable(Screen.Alerts.route) { /* TODO: Pantalla Alertas */ }
-                composable(Screen.Settings.route) { /* TODO: Pantalla Ajustes */ }
+                composable(Screen.Dispensers.route) { /* TODO */ }
+                composable(Screen.Alerts.route) { /* TODO */ }
+                composable(Screen.Settings.route) { /* TODO */ }
                 
                 composable(Screen.DetalleMedicamento.route) { backStackEntry ->
                     val medicamentoId = backStackEntry.arguments?.getString("medicamentoId") ?: ""
