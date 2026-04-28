@@ -1,6 +1,7 @@
 package com.daniel.vitaldispense.ui.theme
 
 import android.app.Activity
+import android.graphics.Color as AndroidColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
@@ -35,8 +36,19 @@ fun VITALDISPENSE_FINALTheme(
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as Activity).window
-            window.statusBarColor = colorScheme.primary.toArgb()
-            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = false
+            // Forzar que el contenido se dibuje detrás de las barras del sistema (Edge-to-Edge)
+            WindowCompat.setDecorFitsSystemWindows(window, false)
+            
+            // Hacer que las barras del sistema sean totalmente transparentes
+            window.statusBarColor = AndroidColor.TRANSPARENT
+            window.navigationBarColor = AndroidColor.TRANSPARENT
+            
+            // Configurar iconos claros para la barra de estado (blancos)
+            val insetsController = WindowCompat.getInsetsController(window, view)
+            insetsController.isAppearanceLightStatusBars = false
+            
+            // Configurar iconos para la barra de navegación (depende del fondo, pero solemos preferir oscuro si el fondo es claro)
+            insetsController.isAppearanceLightNavigationBars = true
         }
     }
 

@@ -50,20 +50,18 @@ dependencies {
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
-    implementation("androidx.compose.material:material-icons-extended") // Para Icons.Default.People y Build
+    implementation("androidx.compose.material:material-icons-extended")
     implementation("androidx.navigation:navigation-compose:2.7.7")
 
-    // Firebase BOM (Gestiona las versiones automáticamente)
+    // Firebase
     implementation(platform("com.google.firebase:firebase-bom:33.1.0"))
-
-    // Firebase Autenticación (Para el inicio de sesión)
     implementation("com.google.firebase:firebase-auth-ktx")
-
-    // Cloud Firestore (Para la base de datos de usuarios/dispensadores)
     implementation("com.google.firebase:firebase-firestore-ktx")
+    implementation("com.google.firebase:firebase-messaging-ktx") // AGREGADO: Cloud Messaging
 
-    // Coil (Para cargar imágenes, por ejemplo, si el médico tiene foto de perfil)
+    // Coil
     implementation("io.coil-kt:coil-compose:2.6.0")
+    
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
