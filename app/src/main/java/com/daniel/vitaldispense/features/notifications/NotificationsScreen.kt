@@ -7,7 +7,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.PersonAdd
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -17,49 +20,56 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.daniel.vitaldispense.ui.theme.TealMedical
+
+enum class NotificationType { SUCCESS, WARNING, INFO, INVITATION }
 
 data class NotificationItem(
     val id: Int,
     val title: String,
     val message: String,
-    val time: String
+    val time: String,
+    val type: NotificationType
 )
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NotificationsScreen() {
-    // Ejemplo de datos para la visualización
     val notifications = listOf(
-        NotificationItem(1, "Dosis completada", "El paciente ha tomado su dosis de Paracetamol correctamente.", "Hace 5 min"),
-        NotificationItem(2, "Alerta de inventario", "Quedan pocas unidades de Omeprazol en el dispensador.", "Hace 1 hora"),
-        NotificationItem(3, "Nueva invitación", "Tu invitación para el Dr. García ha sido aceptada.", "Hace 2 horas"),
-        NotificationItem(4, "Recordatorio", "Es hora de revisar el estado de conexión del dispositivo.", "Hace 5 horas")
+        NotificationItem(1, "Dosis completada", "El paciente ha tomado su dosis de Paracetamol correctamente.", "Hace 5 min", NotificationType.SUCCESS),
+        NotificationItem(2, "Alerta de inventario", "Quedan pocas unidades de Omeprazol en el dispensador.", "Hace 1 hora", NotificationType.WARNING),
+        NotificationItem(3, "Nueva invitación", "Tu invitación para el Dr. García ha sido aceptada.", "Hace 2 horas", NotificationType.INVITATION),
+        NotificationItem(4, "Recordatorio", "Próxima dosis de Ibuprofeno en 30 minutos.", "Hace 3 horas", NotificationType.INFO)
     )
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Notificaciones", fontWeight = FontWeight.Bold) },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background
-                )
-            )
-        }
+        containerColor = Color(0xFFF7F9FC) // Fondo gris claro moderno
     ) { padding ->
-        if (notifications.isEmpty()) {
-            EmptyNotificationsView(modifier = Modifier.padding(padding))
-        } else {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding)
-                    .padding(horizontal = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-                contentPadding = PaddingValues(top = 16.dp, bottom = 100.dp) // Espacio para la barra flotante
-            ) {
-                items(notifications) { notification ->
-                    NotificationCard(notification)
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+        ) {
+            // Título grande integrado (como en tus nuevas ideas de diseño)
+            Text(
+                text = "Notificaciones",
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onBackground,
+                modifier = Modifier.padding(horizontal = 24.dp, vertical = 32.dp)
+            )
+
+            if (notifications.isEmpty()) {
+                EmptyNotificationsView()
+            } else {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 24.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    contentPadding = PaddingValues(bottom = 100.dp)
+                ) {
+                    items(notifications) { notification ->
+                        NotificationCard(notification)
+                    }
                 }
             }
         }
@@ -68,70 +78,76 @@ fun NotificationsScreen() {
 
 @Composable
 fun NotificationCard(notification: NotificationItem) {
+    val (icon, color) = when (notification.type) {
+        NotificationType.SUCCESS -> Icons.Default.CheckCircle to Color(0xFF4CAF50)
+        NotificationType.WARNING -> Icons.Default.Warning to Color(0xFFFFA726)
+        NotificationType.INFO -> Icons.Default.Notifications to MaterialTheme.colorScheme.primary
+        NotificationType.INVITATION -> Icons.Default.PersonAdd to MaterialTheme.colorScheme.primary
+    }
+
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
-        ),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Row(
             modifier = Modifier
                 .padding(16.dp)
                 .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.Top
         ) {
-            // Icono de campana con fondo TealMedical circular
             Box(
                 modifier = Modifier
-                    .size(40.dp)
+                    .size(48.dp)
                     .clip(CircleShape)
-                    .background(TealMedical.copy(alpha = 0.1f)),
+                    .background(color.copy(alpha = 0.1f)),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    imageVector = Icons.Default.Notifications,
+                    imageVector = icon,
                     contentDescription = null,
-                    tint = TealMedical,
-                    modifier = Modifier.size(20.dp)
+                    tint = color,
+                    modifier = Modifier.size(24.dp)
                 )
             }
 
             Spacer(modifier = Modifier.width(16.dp))
 
             Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = notification.title,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 15.sp,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-                Spacer(modifier = Modifier.height(2.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = notification.title,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Text(
+                        text = notification.time,
+                        fontSize = 11.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+                    )
+                }
+                Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = notification.message,
-                    fontSize = 13.sp,
+                    fontSize = 14.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    lineHeight = 18.sp
+                    lineHeight = 20.sp
                 )
             }
-
-            Spacer(modifier = Modifier.width(8.dp))
-
-            Text(
-                text = notification.time,
-                fontSize = 11.sp,
-                color = Color.Gray,
-                modifier = Modifier.align(Alignment.Top)
-            )
         }
     }
 }
 
 @Composable
-fun EmptyNotificationsView(modifier: Modifier = Modifier) {
+fun EmptyNotificationsView() {
     Column(
-        modifier = modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -139,18 +155,14 @@ fun EmptyNotificationsView(modifier: Modifier = Modifier) {
             imageVector = Icons.Default.Notifications,
             contentDescription = null,
             modifier = Modifier.size(80.dp),
-            tint = Color.LightGray.copy(alpha = 0.5f)
+            tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = "Todo en orden por aquí",
-            fontWeight = FontWeight.Medium,
-            color = Color.Gray
-        )
-        Text(
-            text = "No tienes notificaciones pendientes.",
-            fontSize = 14.sp,
-            color = Color.LightGray
+            text = "Sin notificaciones",
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onSurface
         )
     }
 }

@@ -7,8 +7,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -17,118 +17,179 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.daniel.vitaldispense.data.model.Medicamento
 
-@OptIn(ExperimentalMaterial3Api::class)
+data class EstadoPaciente(
+    val cama: String,
+    val nombre: String,
+    val proximaDosis: String,
+    val estado: String,
+    val esCritico: Boolean = false
+)
+
 @Composable
 fun PacienteDashboardScreen(
-    onMedicamentoClick: (Medicamento) -> Unit
+    onPacienteClick: (String) -> Unit
 ) {
-    val medicamentosHoy = listOf(
-        Medicamento("1", "Paracetamol", "500mg", "08:00 AM", true, "💊"),
-        Medicamento("2", "Ibuprofeno", "400mg", "02:00 PM", false, "💊"),
-        Medicamento("3", "Vitamina C", "1g", "09:00 PM", false, "🍊")
+    val pacientesCamas = listOf(
+        EstadoPaciente("101", "Juan Perez", "08:00 AM", "Completado"),
+        EstadoPaciente("102", "Maria Garcia", "02:15 PM", "Pendiente", esCritico = true),
+        EstadoPaciente("105", "Vacio", "-", "Disponible"),
+        EstadoPaciente("110", "Carlos Ruiz", "01:00 PM", "Retrasado", esCritico = true),
+        EstadoPaciente("112", "Elena Solis", "04:00 PM", "Pendiente")
     )
 
-    val proximaToma = medicamentosHoy.firstOrNull { !it.tomado } ?: medicamentosHoy.first()
-
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Vital Dispense", fontWeight = FontWeight.Bold) },
-                actions = {
-                    IconButton(onClick = { /* Perfil */ }) {
-                        Icon(Icons.Default.Person, contentDescription = "Perfil")
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                )
-            )
-        }
-    ) { paddingValues ->
+        containerColor = Color(0xFFF8F9FB)
+    ) { padding ->
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+                .padding(padding)
         ) {
+            // Header de Estación de Enfermería
             item {
-                Text(
-                    text = "¡Hola, Juan!",
-                    style = MaterialTheme.typography.headlineMedium,
-                    color = MaterialTheme.colorScheme.primary
-                )
-                Text(
-                    text = "Aquí tienes tu resumen de hoy",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = Color.Gray
-                )
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 24.dp, vertical = 24.dp)
+                ) {
+                    Text(
+                        text = "Monitor de Pacientes",
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = Color(0xFF1A1C1E)
+                    )
+                    Text(
+                        text = "Sala B - Ala Norte",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color(0xFF1976D2),
+                        fontWeight = FontWeight.Bold
+                    )
+                }
             }
 
+            // Resumen de la Sala (Cuadricula limpia)
             item {
-                ElevatedCard(
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.elevatedCardColors(
-                        containerColor = MaterialTheme.colorScheme.secondaryContainer
-                    ),
-                    shape = RoundedCornerShape(16.dp)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        // CORRECCIÓN: Se especifican start, end y bottom por separado
+                        .padding(start = 24.dp, end = 24.dp, bottom = 24.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    Column(modifier = Modifier.padding(20.dp)) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Default.Notifications, contentDescription = null, tint = MaterialTheme.colorScheme.secondary)
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text("PRÓXIMA TOMA", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.secondary)
-                        }
-                        Spacer(modifier = Modifier.height(12.dp))
-                        Text(text = proximaToma.nombre, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
-                        Text(text = "A las ${proximaToma.horario} • ${proximaToma.dosis}", style = MaterialTheme.typography.bodyMedium)
-                    }
+                    ResumenSalaCard("Activos", "4", Color(0xFF1976D2), Modifier.weight(1f))
+                    ResumenSalaCard("Alertas", "2", Color(0xFFD32F2F), Modifier.weight(1f))
+                    ResumenSalaCard("Libres", "1", Color(0xFF4CAF50), Modifier.weight(1f))
                 }
             }
 
             item {
-                Text(text = "Medicamentos de Hoy", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+                Text(
+                    text = "Lista de Camas",
+                    modifier = Modifier.padding(start = 24.dp, end = 24.dp, bottom = 12.dp),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
             }
 
-            items(medicamentosHoy) { medicamento ->
-                MedicamentoItem(medicamento = medicamento, onClick = { onMedicamentoClick(medicamento) })
+            items(pacientesCamas) { pac ->
+                PacienteCamaItem(pac, onClick = { onPacienteClick(pac.cama) })
             }
+
+            item { Spacer(modifier = Modifier.height(100.dp)) }
         }
     }
 }
 
 @Composable
-fun MedicamentoItem(medicamento: Medicamento, onClick: () -> Unit) {
-    ElevatedCard(
+fun PacienteCamaItem(pac: EstadoPaciente, onClick: () -> Unit) {
+    Card(
         modifier = Modifier
+            .padding(horizontal = 24.dp, vertical = 6.dp)
             .fillMaxWidth()
             .clickable { onClick() },
-        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp),
-        colors = CardDefaults.elevatedCardColors(
-            containerColor = if (medicamento.tomado) Color(0xFFE8F5E9) else Color.White
-        )
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
     ) {
         Row(
-            modifier = Modifier.padding(16.dp).fillMaxWidth(),
+            modifier = Modifier.padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            // Indicador de Cama estilizado
             Box(
-                modifier = Modifier.size(48.dp).background(MaterialTheme.colorScheme.primaryContainer, RoundedCornerShape(12.dp)),
+                modifier = Modifier
+                    .size(50.dp)
+                    .background(
+                        if (pac.esCritico) Color(0xFFFFEBEE) else Color(0xFFF0F7FF),
+                        RoundedCornerShape(14.dp)
+                    ),
                 contentAlignment = Alignment.Center
             ) {
-                Text(text = medicamento.icono, fontSize = 24.sp)
+                Text(
+                    text = pac.cama,
+                    fontWeight = FontWeight.Bold,
+                    color = if (pac.esCritico) Color(0xFFD32F2F) else Color(0xFF1976D2)
+                )
             }
+
             Spacer(modifier = Modifier.width(16.dp))
-            Column(modifier = Modifier.weight(1f)) { // CORRECCIÓN: Usar 1f en lugar de 1.dp
-                Text(text = medicamento.nombre, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                Text(text = "${medicamento.horario} • ${medicamento.dosis}", style = MaterialTheme.typography.bodySmall)
+
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = pac.nombre,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp
+                )
+                Text(
+                    text = if (pac.proximaDosis == "-") "Sin rondas" else "Próxima: ${pac.proximaDosis}",
+                    fontSize = 12.sp,
+                    color = Color.Gray
+                )
             }
-            if (medicamento.tomado) {
-                Text("Tomado", color = Color(0xFF2E7D32), style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold)
+
+            Column(horizontalAlignment = Alignment.End) {
+                if (pac.esCritico) {
+                    Icon(
+                        Icons.Default.Warning,
+                        contentDescription = null,
+                        tint = Color(0xFFD32F2F),
+                        modifier = Modifier.size(16.dp)
+                    )
+                }
+                Text(
+                    text = pac.estado,
+                    style = MaterialTheme.typography.labelSmall,
+                    fontWeight = FontWeight.Bold,
+                    color = when (pac.estado) {
+                        "Retrasado" -> Color(0xFFD32F2F)
+                        "Completado" -> Color(0xFF2E7D32)
+                        "Disponible" -> Color(0xFF4CAF50)
+                        else -> Color(0xFFFFA726)
+                    }
+                )
             }
+            
+            Spacer(modifier = Modifier.width(8.dp))
+            Icon(Icons.Default.ChevronRight, contentDescription = null, tint = Color.LightGray)
+        }
+    }
+}
+
+@Composable
+fun ResumenSalaCard(label: String, value: String, color: Color, modifier: Modifier = Modifier) {
+    Card(
+        modifier = modifier,
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+    ) {
+        Column(
+            modifier = Modifier.padding(12.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(text = value, fontSize = 22.sp, fontWeight = FontWeight.Bold, color = color)
+            Text(text = label, style = MaterialTheme.typography.labelSmall, color = Color.Gray)
         }
     }
 }

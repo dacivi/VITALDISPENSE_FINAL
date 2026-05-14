@@ -9,6 +9,10 @@ import com.daniel.vitaldispense.features.paciente.DetalleMedicamentoScreen
 import com.daniel.vitaldispense.features.paciente.PacienteDashboardScreen
 import com.daniel.vitaldispense.features.auth.LoginScreen
 import com.daniel.vitaldispense.features.auth.RegisterScreen
+import com.daniel.vitaldispense.features.notifications.NotificationsScreen
+import com.daniel.vitaldispense.features.settings.SettingsScreen
+import com.daniel.vitaldispense.features.tomas.TomasScreen
+import com.daniel.vitaldispense.features.hardware.HardwareScreen
 
 @Composable
 fun NavGraph(navController: NavHostController) {
@@ -19,7 +23,7 @@ fun NavGraph(navController: NavHostController) {
         composable(Screen.Login.route) {
             LoginScreen(
                 onLoginSuccess = {
-                    navController.navigate(Screen.Home.route) {
+                    navController.navigate(Screen.Inicio.route) {
                         popUpTo(Screen.Login.route) { inclusive = true }
                     }
                 },
@@ -31,7 +35,7 @@ fun NavGraph(navController: NavHostController) {
         composable(Screen.Register.route) {
             RegisterScreen(
                 onRegisterSuccess = {
-                    navController.navigate(Screen.Home.route) {
+                    navController.navigate(Screen.Inicio.route) {
                         popUpTo(Screen.Login.route) { inclusive = true }
                     }
                 },
@@ -40,17 +44,30 @@ fun NavGraph(navController: NavHostController) {
                 }
             )
         }
-        composable(Screen.Home.route) {
+        composable(Screen.Inicio.route) {
             HomeScreen()
         }
-        composable(Screen.Patients.route) {
-            PacienteDashboardScreen(onMedicamentoClick = { medicamento ->
-                navController.navigate(Screen.DetalleMedicamento.createRoute(medicamento.id))
+        composable(Screen.Tomas.route) {
+            TomasScreen()
+        }
+        composable(Screen.Resumen.route) {
+            PacienteDashboardScreen(onPacienteClick = { camaId ->
+                // Por ahora no navegamos o podrías navegar a un detalle de cama
             })
         }
-        composable(Screen.Dispensers.route) { /* TODO: Dispensers Screen */ }
-        composable(Screen.Alerts.route) { /* TODO: Alerts Screen */ }
-        composable(Screen.Settings.route) { /* TODO: Settings Screen */ }
+        composable(Screen.Dispensador.route) {
+            HardwareScreen()
+        }
+        composable(Screen.Alertas.route) {
+            NotificationsScreen()
+        }
+        composable(Screen.Ajustes.route) {
+            SettingsScreen(onLogout = {
+                navController.navigate(Screen.Login.route) {
+                    popUpTo(0) { inclusive = true }
+                }
+            })
+        }
         
         composable(Screen.DetalleMedicamento.route) { backStackEntry ->
             val medicamentoId = backStackEntry.arguments?.getString("medicamentoId") ?: ""

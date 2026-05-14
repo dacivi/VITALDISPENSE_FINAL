@@ -21,127 +21,94 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun HomeScreen() {
     val proximasTomas = listOf(
-        TomaMock("Paracetamol", "08:00 AM", "Daniel (Yo)"),
-        TomaMock("Ibuprofeno", "12:00 PM", "María (Madre)"),
-        TomaMock("Vitamina C", "09:00 PM", "Daniel (Yo)")
+        TomaMock("Paracetamol", "08:00 AM", "Daniel (Yo)", Color(0xFFE3F2FD), Color(0xFF1976D2)),
+        TomaMock("Ibuprofeno", "12:00 PM", "María (Madre)", Color(0xFFFFF3E0), Color(0xFFFFA726)),
+        TomaMock("Vitamina C", "09:00 PM", "Daniel (Yo)", Color(0xFFE8F5E9), Color(0xFF66BB6A))
     )
 
     Scaffold(
-        containerColor = MaterialTheme.colorScheme.background
+        containerColor = Color(0xFFF8F9FB)
     ) { padding ->
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
         ) {
-            // Header con degradado Teal Médico
+            // Header Compacto y Clean
             item {
-                Box(
+                Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(180.dp)
-                        .background(
-                            brush = Brush.verticalGradient(
-                                colors = listOf(
-                                    MaterialTheme.colorScheme.primary,
-                                    MaterialTheme.colorScheme.primary.copy(alpha = 0.8f)
-                                )
-                            ),
-                            shape = RoundedCornerShape(bottomStart = 32.dp, bottomEnd = 32.dp)
-                        )
-                        .padding(24.dp)
+                        .padding(horizontal = 24.dp, vertical = 24.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Column {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Column {
-                                Text(
-                                    text = "Buenos días,",
-                                    color = Color.White.copy(alpha = 0.8f),
-                                    style = MaterialTheme.typography.bodyLarge
-                                )
-                                Text(
-                                    text = "Daniel",
-                                    color = Color.White,
-                                    style = MaterialTheme.typography.headlineMedium,
-                                    fontWeight = FontWeight.Bold
-                                )
-                            }
-                            IconButton(
-                                onClick = { },
-                                modifier = Modifier.background(Color.White.copy(alpha = 0.2f), CircleShape)
-                            ) {
-                                Icon(Icons.Default.Notifications, contentDescription = null, tint = Color.White)
-                            }
-                        }
+                        Text(
+                            text = "Hola, Daniel",
+                            style = MaterialTheme.typography.headlineSmall,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = Color(0xFF1A1C1E)
+                        )
+                        Text(
+                            text = "Tu salud está al día",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = Color.Gray
+                        )
+                    }
+                    IconButton(
+                        onClick = { },
+                        modifier = Modifier.background(Color.White, CircleShape)
+                    ) {
+                        Icon(Icons.Default.Notifications, contentDescription = null, tint = Color(0xFF1976D2))
                     }
                 }
             }
 
-            // Card de Adherencia (92%)
+            // Card de Adherencia Minimalista
             item {
-                ElevatedCard(
+                Card(
                     modifier = Modifier
                         .padding(horizontal = 24.dp)
-                        .offset(y = (-40).dp)
                         .fillMaxWidth(),
                     shape = RoundedCornerShape(24.dp),
-                    colors = CardDefaults.elevatedCardColors(containerColor = Color.White)
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                 ) {
                     Row(
-                        modifier = Modifier.padding(24.dp),
+                        modifier = Modifier.padding(20.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Box(
-                            modifier = Modifier.size(80.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
+                        Box(modifier = Modifier.size(60.dp), contentAlignment = Alignment.Center) {
                             CircularProgressIndicator(
                                 progress = 0.92f,
                                 modifier = Modifier.fillMaxSize(),
-                                strokeWidth = 8.dp,
-                                color = MaterialTheme.colorScheme.primary,
-                                trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
+                                strokeWidth = 6.dp,
+                                color = Color(0xFF1976D2),
+                                trackColor = Color(0xFFE3F2FD)
                             )
-                            Text(
-                                text = "92%",
-                                style = MaterialTheme.typography.titleLarge,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.primary
-                            )
+                            Text("92%", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = Color(0xFF1976D2))
                         }
-                        Spacer(modifier = Modifier.width(20.dp))
+                        Spacer(modifier = Modifier.width(16.dp))
                         Column {
-                            Text(
-                                text = "Adherencia Semanal",
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold
-                            )
-                            Text(
-                                text = "¡Excelente trabajo! Has tomado casi todas tus dosis.",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = Color.Gray
-                            )
+                            Text("Buen progreso", fontWeight = FontWeight.Bold)
+                            Text("Has cumplido con casi todas tus dosis", fontSize = 12.sp, color = Color.Gray)
                         }
                     }
                 }
             }
 
-            // Sección "Tomas Próximas"
             item {
                 Text(
-                    text = "Tomas Próximas",
-                    modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp),
-                    style = MaterialTheme.typography.titleLarge,
+                    text = "Próximas tomas",
+                    modifier = Modifier.padding(horizontal = 24.dp, vertical = 24.dp),
+                    style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
             }
 
             items(proximasTomas) { toma ->
-                TomaCard(toma)
+                CleanTomaCard(toma)
             }
             
             item { Spacer(modifier = Modifier.height(100.dp)) }
@@ -150,47 +117,40 @@ fun HomeScreen() {
 }
 
 @Composable
-fun TomaCard(toma: TomaMock) {
+fun CleanTomaCard(toma: TomaMock) {
     Card(
         modifier = Modifier
-            .padding(horizontal = 24.dp, vertical = 8.dp)
+            .padding(horizontal = 24.dp, vertical = 6.dp)
             .fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
     ) {
         Row(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier.padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
                 modifier = Modifier
-                    .size(48.dp)
-                    .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(12.dp)),
+                    .size(44.dp)
+                    .background(toma.bgColor, RoundedCornerShape(12.dp)),
                 contentAlignment = Alignment.Center
             ) {
-                Text(text = "💊", fontSize = 24.sp)
+                Text(text = "💊", fontSize = 20.sp)
             }
-            Spacer(modifier = Modifier.width(16.dp))
+            Spacer(modifier = Modifier.width(12.dp))
             Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = toma.nombre,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
-                )
-                Text(
-                    text = toma.paciente,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = Color.Gray
-                )
+                Text(toma.nombre, fontWeight = FontWeight.Bold, fontSize = 15.sp)
+                Text(toma.paciente, fontSize = 12.sp, color = Color.Gray)
             }
             Text(
                 text = toma.hora,
-                style = MaterialTheme.typography.labelLarge,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.secondary
+                fontSize = 13.sp,
+                color = Color(0xFF1976D2)
             )
         }
     }
 }
 
-data class TomaMock(val nombre: String, val hora: String, val paciente: String)
+data class TomaMock(val nombre: String, val hora: String, val paciente: String, val bgColor: Color, val iconColor: Color)

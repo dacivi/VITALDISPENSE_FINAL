@@ -12,18 +12,20 @@ import androidx.core.view.WindowCompat
 import androidx.compose.ui.graphics.Color
 
 private val LightColorScheme = lightColorScheme(
-    primary = TealMedical,
+    primary = PrimaryMedicalBlue,
     onPrimary = SurfaceWhite,
-    secondary = BlueMedical,
+    secondary = SecondaryMedicalBlue,
     onSecondary = SurfaceWhite,
-    background = BackgroundGray,
-    onBackground = TextPrimary,
+    background = BackgroundLight,
+    onBackground = TextDark,
     surface = SurfaceWhite,
-    onSurface = TextPrimary,
-    error = AlertRed,
+    onSurface = TextDark,
+    error = ErrorRed,
     onError = SurfaceWhite,
-    surfaceVariant = Color(0xFFE0F2F1), // Teal suave para fondos de tarjetas
-    onSurfaceVariant = TextSecondary
+    surfaceVariant = BlueSoft,
+    onSurfaceVariant = TextGray,
+    tertiary = AlertCoral,
+    onTertiary = SurfaceWhite
 )
 
 @Composable
@@ -36,18 +38,16 @@ fun VITALDISPENSE_FINALTheme(
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as Activity).window
-            // Forzar que el contenido se dibuje detrás de las barras del sistema (Edge-to-Edge)
             WindowCompat.setDecorFitsSystemWindows(window, false)
             
-            // Hacer que las barras del sistema sean totalmente transparentes
             window.statusBarColor = AndroidColor.TRANSPARENT
             window.navigationBarColor = AndroidColor.TRANSPARENT
             
-            // Configurar iconos claros para la barra de estado (blancos)
             val insetsController = WindowCompat.getInsetsController(window, view)
-            insetsController.isAppearanceLightStatusBars = false
-            
-            // Configurar iconos para la barra de navegación (depende del fondo, pero solemos preferir oscuro si el fondo es claro)
+            // Barra de estado: iconos oscuros porque el fondo suele ser claro (o azul, pero el sistema puede manejarlo)
+            // Si el header es azul oscuro, preferiríamos iconos claros (isAppearanceLightStatusBars = false)
+            // Si el fondo general es claro, iconos oscuros (isAppearanceLightStatusBars = true)
+            insetsController.isAppearanceLightStatusBars = true
             insetsController.isAppearanceLightNavigationBars = true
         }
     }

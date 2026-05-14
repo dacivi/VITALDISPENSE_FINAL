@@ -2,16 +2,19 @@ package com.daniel.vitaldispense.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-// Paleta de Colores de Figma - Vital Dispense
-val TealMedical = Color(0xFF00897B) // Primary
-val BlueMedical = Color(0xFF005FB8) // Secondary
-val BackgroundGray = Color(0xFFF7F9FC)
+// Paleta "Azul Clínico y Limpio" - Vital Dispense
+val PrimaryMedicalBlue = Color(0xFF1976D2)
+val SecondaryMedicalBlue = Color(0xFF42A5F5)
+val AlertCoral = Color(0xFFFF7043)
+val BackgroundLight = Color(0xFFF5F5F6)
 val SurfaceWhite = Color(0xFFFFFFFF)
-val AlertRed = Color(0xFFD32F2F)
 
-// Variaciones y Colores de Texto
-val TextPrimary = Color(0xFF1A1C1E)
-val TextSecondary = Color(0xFF455A64)
-val TealLight = Color(0xFFB2DFDB)
-val BlueLight = Color(0xFFBBDEFB)
+// Colores de Texto y Estados
+val TextDark = Color(0xFF212121)
+val TextGray = Color(0xFF757575)
 val SuccessGreen = Color(0xFF4CAF50)
+val ErrorRed = Color(0xFFD32F2F)
+
+// Variaciones suaves para fondos
+val BlueSoft = Color(0xFFE3F2FD)
+val CoralSoft = Color(0xFFFBE9E7)
