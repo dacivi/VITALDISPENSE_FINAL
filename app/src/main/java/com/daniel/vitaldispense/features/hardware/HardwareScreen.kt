@@ -1,5 +1,7 @@
 package com.daniel.vitaldispense.features.hardware
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -7,73 +9,172 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.BatteryFull
-import androidx.compose.material.icons.filled.SignalCellularAlt
-import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-
-data class Dispensador(
-    val id: String,
-    val cama: String,
-    val paciente: String,
-    val bateria: Int,
-    val señal: String,
-    val estado: String,
-    val alertas: Boolean = false
-)
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
-fun HardwareScreen() {
-    val dispensadores = listOf(
-        Dispensador("D-01", "Cama 101", "Juan Perez", 85, "Excelente", "En línea"),
-        Dispensador("D-02", "Cama 102", "Maria Garcia", 12, "Media", "Batería Baja", alertas = true),
-        Dispensador("D-03", "Cama 105", "Vacio", 100, "N/A", "Standby"),
-        Dispensador("D-04", "Cama 110", "Carlos Ruiz", 45, "Baja", "Revisar Conexión", alertas = true)
+fun HardwareScreen(
+    viewModel: HardwareViewModel = viewModel()
+) {
+    val uiState by viewModel.uiState.collectAsState()
+    val humedadActual by viewModel.humedadActual.collectAsState()
+    val isDispensing by viewModel.isDispensing.collectAsState()
+
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.background
+    ) {
+        when (val state = uiState) {
+            is HardwareUiState.Loading -> {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+                }
+            }
+            is HardwareUiState.Error -> {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text(text = state.message, color = MaterialTheme.colorScheme.error)
+                }
+            }
+            is HardwareUiState.Success -> {
+                HardwareContent(
+                    state = state,
+                    humedadActual = humedadActual,
+                    isDispensingGlobal = isDispensing, // Pasamos el flujo dinámico continuo
+                    onDispenseClick = { viewModel.dispensarManualmente() }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun HardwareContent(
+    state: HardwareUiState.Success,
+    humedadActual: Int,
+    isDispensingGlobal: Boolean,
+    onDispenseClick: () -> Unit
+) {
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 20.dp),
+        verticalArrangement = Arrangement.spacedBy(20.dp),
+        contentPadding = PaddingValues(top = 16.dp, bottom = 100.dp)
+    ) {
+        // 1. Estado del Dispositivo IoT
+        item {
+            // CORRECCIÓN: Aquí inyectamos directamente 'isDispensingGlobal'
+            // Esto asegura que el botón cambie a "Girando Motor..." y regrese a la normalidad al instante
+            StatusCard(
+                isOnline = state.isOnline,
+                isDispensing = isDispensingGlobal,
+                onDispenseClick = onDispenseClick
+            )
+        }
+
+        // 2. Sensores en Tiempo Real
+        item {
+            SectionHeader(title = "Monitoreo Ambiental", icon = Icons.Default.Sensors)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                SensorCard(
+                    title = "Temperatura",
+                    value = "${state.sensors.temperature}°C",
+                    icon = Icons.Default.Thermostat,
+                    color = Color(0xFFE57373),
+                    modifier = Modifier.weight(1f)
+                )
+                SensorCard(
+                    title = "Humedad",
+                    value = "$humedadActual%",
+                    icon = Icons.Default.WaterDrop,
+                    color = if (humedadActual > 70) Color.Red else Color(0xFF64B5F6),
+                    modifier = Modifier.weight(1f)
+                )
+            }
+        }
+
+        // Gráfica de Humedad Dinámica
+        item {
+            HumidityLineChart(history = state.sensors.history, currentHumidity = humedadActual)
+        }
+
+        // 3. Inventario del Dispensador
+        item {
+            SectionHeader(title = "Estado del Inventario", icon = Icons.Default.Inventory)
+        }
+
+        items(state.inventario) { comp ->
+            CompartimentoItem(comp)
+        }
+    }
+}
+
+@Composable
+fun StatusCard(isOnline: Boolean, isDispensing: Boolean, onDispenseClick: () -> Unit) {
+    val statusColor by animateColorAsState(
+        targetValue = if (isOnline) Color(0xFF4CAF50) else Color.Gray,
+        label = "statusColor"
     )
 
-    Scaffold(
-        containerColor = Color(0xFFF8F9FB)
-    ) { padding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-        ) {
-            // Header
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 24.dp, vertical = 24.dp)
-            ) {
-                Text(
-                    text = "Gestión de Hardware",
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.ExtraBold,
-                    color = Color(0xFF1A1C1E)
+    Card(
+        shape = RoundedCornerShape(24.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(modifier = Modifier.padding(20.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Box(
+                    modifier = Modifier
+                        .size(10.dp)
+                        .clip(CircleShape)
+                        .background(statusColor)
                 )
+                Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "${dispensadores.size} dispositivos monitoreados",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Color.Gray
+                    text = if (isOnline) "Dispensador en Línea" else "Dispensador Fuera de Línea",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = if (isOnline) Color(0xFF2E7D32) else Color.Gray
                 )
             }
 
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(start = 24.dp, end = 24.dp, bottom = 100.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Button(
+                onClick = onDispenseClick,
+                enabled = isOnline && !isDispensing,
+                modifier = Modifier.fillMaxWidth().height(54.dp),
+                shape = RoundedCornerShape(16.dp)
             ) {
-                items(dispensadores) { disp ->
-                    HardwareCard(disp)
+                if (isDispensing) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(20.dp),
+                        color = Color.White,
+                        strokeWidth = 2.dp
+                    )
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Text("Girando Motor...")
+                } else {
+                    Icon(Icons.Default.Bolt, contentDescription = null)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Dispensar Dosis Manual")
                 }
             }
         }
@@ -81,60 +182,112 @@ fun HardwareScreen() {
 }
 
 @Composable
-fun HardwareCard(disp: Dispensador) {
+fun SensorCard(title: String, value: String, icon: ImageVector, color: Color, modifier: Modifier) {
+    Card(
+        modifier = modifier,
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(2.dp)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Icon(icon, contentDescription = null, tint = color, modifier = Modifier.size(28.dp))
+            Spacer(modifier = Modifier.height(12.dp))
+            Text(title, fontSize = 12.sp, color = Color.Gray)
+            Text(value, fontSize = 22.sp, fontWeight = FontWeight.ExtraBold, color = color)
+        }
+    }
+}
+
+@Composable
+fun HumidityLineChart(history: List<Float>, currentHumidity: Int) {
+    Card(
+        modifier = Modifier.fillMaxWidth().height(160.dp),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(2.dp)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text("Historial de Humedad (%)", style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+            Spacer(modifier = Modifier.height(16.dp))
+            Canvas(modifier = Modifier.fillMaxSize()) {
+                if (history.size < 2) return@Canvas
+                val path = Path()
+                val width = size.width
+                val height = size.height
+                val maxVal = 100f
+                val spacing = width / (history.size - 1)
+
+                history.forEachIndexed { index, value ->
+                    val x = index * spacing
+                    val y = height - (value / maxVal * height)
+                    if (index == 0) path.moveTo(x, y) else path.lineTo(x, y)
+                }
+
+                drawPath(
+                    path = path,
+                    color = if (currentHumidity > 70) Color.Red else Color(0xFF00897B),
+                    style = Stroke(width = 3.dp.toPx())
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun CompartimentoItem(comp: Compartimento) {
+    val isLowStock = comp.cantidad <= comp.stockMinimo
+
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(24.dp),
+        shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(1.dp)
     ) {
-        Column(modifier = Modifier.padding(20.dp)) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+        Row(
+            modifier = Modifier.padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Surface(
+                shape = CircleShape,
+                color = MaterialTheme.colorScheme.primaryContainer,
+                modifier = Modifier.size(44.dp)
             ) {
-                Column {
-                    Text(text = disp.cama, fontWeight = FontWeight.Bold, fontSize = 18.sp)
-                    Text(text = "ID: ${disp.id} • ${disp.paciente}", color = Color.Gray, fontSize = 13.sp)
-                }
-                
-                if (disp.alertas) {
-                    Icon(Icons.Default.Warning, contentDescription = null, tint = Color(0xFFD32F2F))
-                } else {
-                    Box(
-                        modifier = Modifier
-                            .size(10.dp)
-                            .clip(CircleShape)
-                            .background(Color(0xFF4CAF50))
+                Box(contentAlignment = Alignment.Center) {
+                    Text(
+                        text = comp.id.toString(),
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
                     )
                 }
             }
-            
-            HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp), thickness = 0.5.dp, color = Color.LightGray)
-            
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                StatusInfo(Icons.Default.BatteryFull, "${disp.bateria}%", if(disp.bateria < 20) Color.Red else Color.Gray)
-                StatusInfo(Icons.Default.SignalCellularAlt, disp.señal, Color.Gray)
-                Text(
-                    text = disp.estado, 
-                    fontWeight = FontWeight.Bold, 
-                    fontSize = 12.sp,
-                    color = if(disp.alertas) Color(0xFFD32F2F) else Color(0xFF1976D2)
-                )
+            Spacer(modifier = Modifier.width(16.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                Text(comp.medicamento, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                Text("${comp.dosis} • En stock: ${comp.cantidad}", fontSize = 13.sp, color = Color.Gray)
+            }
+            if (isLowStock) {
+                Surface(
+                    color = Color(0xFFFFEBEE),
+                    shape = RoundedCornerShape(8.dp)
+                ) {
+                    Text(
+                        "Stock Bajo",
+                        color = Color.Red,
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                    )
+                }
             }
         }
     }
 }
 
 @Composable
-fun StatusInfo(icon: ImageVector, text: String, color: Color) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        Icon(icon, contentDescription = null, modifier = Modifier.size(16.dp), tint = color)
-        Spacer(modifier = Modifier.width(4.dp))
-        Text(text = text, fontSize = 12.sp, color = color)
+fun SectionHeader(title: String, icon: ImageVector) {
+    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(vertical = 8.dp)) {
+        Icon(icon, contentDescription = null, tint = Color.Gray, modifier = Modifier.size(18.dp))
+        Spacer(modifier = Modifier.width(8.dp))
+        Text(title, fontSize = 14.sp, fontWeight = FontWeight.Bold, color = Color.Gray)
     }
 }

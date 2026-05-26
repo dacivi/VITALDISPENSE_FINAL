@@ -33,6 +33,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.daniel.vitaldispense.features.auth.LoginScreen
 import com.daniel.vitaldispense.features.auth.RegisterScreen
+import com.daniel.vitaldispense.features.hardware.HardwareScreen
 import com.daniel.vitaldispense.features.home.HomeScreen
 import com.daniel.vitaldispense.features.notifications.NotificationsScreen
 import com.daniel.vitaldispense.features.paciente.DetalleMedicamentoScreen
@@ -67,7 +68,7 @@ fun MainContent() {
     val items = listOf(
         BottomNavItem("Inicio", Screen.Inicio.route, Icons.Filled.Home, Icons.Outlined.Home),
         BottomNavItem("Rondas", Screen.Tomas.route, Icons.Filled.CalendarMonth, Icons.Outlined.CalendarMonth),
-        BottomNavItem("Hardware", Screen.Dispensador.route, Icons.Filled.Memory, Icons.Outlined.Memory),
+        BottomNavItem("Dispensador", Screen.Dispensador.route, Icons.Filled.Memory, Icons.Outlined.Memory),
         BottomNavItem("Alertas", Screen.Alertas.route, Icons.Filled.Notifications, Icons.Outlined.Notifications),
         BottomNavItem("Ajustes", Screen.Ajustes.route, Icons.Filled.Settings, Icons.Outlined.Settings)
     )
@@ -134,7 +135,7 @@ fun MainContent() {
             }
             composable(Screen.Inicio.route) { HomeScreen() }
             composable(Screen.Tomas.route) { TomasScreen() }
-            composable(Screen.Dispensador.route) { /* TODO: Nueva pantalla de Hardware */ }
+            composable(Screen.Dispensador.route) { HardwareScreen() }
             composable(Screen.Alertas.route) { NotificationsScreen() }
             composable(Screen.Ajustes.route) { 
                 SettingsScreen(onLogout = { 
