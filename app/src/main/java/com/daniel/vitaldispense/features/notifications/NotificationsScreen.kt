@@ -41,14 +41,13 @@ fun NotificationsScreen() {
     )
 
     Scaffold(
-        containerColor = Color(0xFFF7F9FC) // Fondo gris claro moderno
+        containerColor = Color(0xFFF7F9FC)
     ) { padding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
         ) {
-            // Título grande integrado (como en tus nuevas ideas de diseño)
             Text(
                 text = "Notificaciones",
                 style = MaterialTheme.typography.headlineMedium,

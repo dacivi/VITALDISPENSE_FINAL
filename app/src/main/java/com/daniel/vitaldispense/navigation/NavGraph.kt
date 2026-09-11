@@ -4,15 +4,15 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.daniel.vitaldispense.features.home.HomeScreen
-import com.daniel.vitaldispense.features.paciente.DetalleMedicamentoScreen
-import com.daniel.vitaldispense.features.paciente.PacienteDashboardScreen
 import com.daniel.vitaldispense.features.auth.LoginScreen
 import com.daniel.vitaldispense.features.auth.RegisterScreen
-import com.daniel.vitaldispense.features.notifications.NotificationsScreen
-import com.daniel.vitaldispense.features.settings.SettingsScreen
-import com.daniel.vitaldispense.features.tomas.TomasScreen
 import com.daniel.vitaldispense.features.hardware.HardwareScreen
+import com.daniel.vitaldispense.features.home.HomeScreen
+import com.daniel.vitaldispense.features.notifications.NotificationsScreen
+import com.daniel.vitaldispense.features.pacientes.AgregarPacienteScreen
+import com.daniel.vitaldispense.features.pacientes.DetallePacienteScreen
+import com.daniel.vitaldispense.features.pacientes.PacientesScreen
+import com.daniel.vitaldispense.features.settings.SettingsScreen
 
 @Composable
 fun NavGraph(navController: NavHostController) {
@@ -20,6 +20,8 @@ fun NavGraph(navController: NavHostController) {
         navController = navController,
         startDestination = Screen.Login.route
     ) {
+
+        // ── Auth ─────────────────────────────────────────────────────────────
         composable(Screen.Login.route) {
             LoginScreen(
                 onLoginSuccess = {
@@ -32,6 +34,7 @@ fun NavGraph(navController: NavHostController) {
                 }
             )
         }
+
         composable(Screen.Register.route) {
             RegisterScreen(
                 onRegisterSuccess = {
@@ -39,42 +42,77 @@ fun NavGraph(navController: NavHostController) {
                         popUpTo(Screen.Login.route) { inclusive = true }
                     }
                 },
-                onBackClick = {
-                    navController.popBackStack()
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+
+        // ── Tab 1: Inicio / Dashboard ─────────────────────────────────────────
+        composable(Screen.Inicio.route) {
+            HomeScreen(
+                onNotificationsClick = {
+                    navController.navigate(Screen.Alertas.route)
                 }
             )
         }
-        composable(Screen.Inicio.route) {
-            HomeScreen()
-        }
-        composable(Screen.Tomas.route) {
-            TomasScreen()
-        }
-        composable(Screen.Resumen.route) {
-            PacienteDashboardScreen(onPacienteClick = { camaId ->
-                // Por ahora no navegamos o podrías navegar a un detalle de cama
-            })
-        }
-        composable(Screen.Dispensador.route) {
-            HardwareScreen()
-        }
+
+        // Notificaciones — accesible desde el header del Home
         composable(Screen.Alertas.route) {
             NotificationsScreen()
         }
-        composable(Screen.Ajustes.route) {
-            SettingsScreen(onLogout = {
-                navController.navigate(Screen.Login.route) {
-                    popUpTo(0) { inclusive = true }
+
+        // ── Tab 2: Pacientes ──────────────────────────────────────────────────
+        composable(Screen.Pacientes.route) {
+            PacientesScreen(
+                onPacienteClick = { pacienteId ->
+                    navController.navigate(Screen.DetallePaciente.createRoute(pacienteId))
+                },
+                onAgregarPaciente = {
+                    navController.navigate(Screen.AgregarPaciente.route)
                 }
-            })
+            )
         }
-        
-        composable(Screen.DetalleMedicamento.route) { backStackEntry ->
-            val medicamentoId = backStackEntry.arguments?.getString("medicamentoId") ?: ""
-            DetalleMedicamentoScreen(
-                medicamentoId = medicamentoId,
+
+        composable(Screen.AgregarPaciente.route) {
+            AgregarPacienteScreen(
+                onBackClick = { navController.popBackStack() },
+                onPacienteGuardado = {
+                    navController.navigate(Screen.Pacientes.route) {
+                        popUpTo(Screen.Pacientes.route) { inclusive = true }
+                    }
+                }
+            )
+        }
+
+        composable(Screen.DetallePaciente.route) { backStackEntry ->
+            val pacienteId = backStackEntry.arguments?.getString("pacienteId") ?: ""
+            DetallePacienteScreen(
+                pacienteId = pacienteId,
                 onBackClick = { navController.popBackStack() }
             )
+        }
+
+        // ── Tab 3: Dispensador ────────────────────────────────────────────────
+        composable(Screen.Dispensador.route) {
+            HardwareScreen()
+        }
+
+        // ── Tab 4: Perfil / Ajustes ───────────────────────────────────────────
+        composable(Screen.Ajustes.route) {
+            SettingsScreen(
+                onLogout = {
+                    navController.navigate(Screen.Login.route) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                },
+                onInvitacionesClick = {
+                    navController.navigate(Screen.Invitaciones.route)
+                }
+            )
+        }
+
+        composable(Screen.Invitaciones.route) {
+            // InvitacionesScreen se mantiene, ahora accesible desde Perfil
+            com.daniel.vitaldispense.features.invitaciones.InvitacionesScreen()
         }
     }
 }

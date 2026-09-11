@@ -4,19 +4,15 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Assignment
-import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Memory
-import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.outlined.Assignment
-import androidx.compose.material.icons.outlined.CalendarMonth
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Memory
-import androidx.compose.material.icons.outlined.Notifications
+import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -27,19 +23,9 @@ import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.daniel.vitaldispense.features.auth.LoginScreen
-import com.daniel.vitaldispense.features.auth.RegisterScreen
-import com.daniel.vitaldispense.features.hardware.HardwareScreen
-import com.daniel.vitaldispense.features.home.HomeScreen
-import com.daniel.vitaldispense.features.notifications.NotificationsScreen
-import com.daniel.vitaldispense.features.paciente.DetalleMedicamentoScreen
-import com.daniel.vitaldispense.features.paciente.PacienteDashboardScreen
-import com.daniel.vitaldispense.features.settings.SettingsScreen
-import com.daniel.vitaldispense.features.tomas.TomasScreen
+import com.daniel.vitaldispense.navigation.NavGraph
 import com.daniel.vitaldispense.navigation.Screen
 import com.daniel.vitaldispense.ui.theme.VITALDISPENSE_FINALTheme
 
@@ -59,38 +45,74 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+// Rutas de Auth y sub-pantallas donde se oculta el BottomNav
+private val hiddenNavRoutes = setOf(
+    Screen.Login.route,
+    Screen.Register.route,
+    Screen.AgregarPaciente.route,
+    Screen.Alertas.route,
+    Screen.Invitaciones.route,
+    Screen.DetalleMedicamento.route
+)
+
 @Composable
 fun MainContent() {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentDestination = navBackStackEntry?.destination
+    val currentRoute = navBackStackEntry?.destination?.route
 
-    val items = listOf(
-        BottomNavItem("Inicio", Screen.Inicio.route, Icons.Filled.Home, Icons.Outlined.Home),
-        BottomNavItem("Rondas", Screen.Tomas.route, Icons.Filled.CalendarMonth, Icons.Outlined.CalendarMonth),
-        BottomNavItem("Dispensador", Screen.Dispensador.route, Icons.Filled.Memory, Icons.Outlined.Memory),
-        BottomNavItem("Alertas", Screen.Alertas.route, Icons.Filled.Notifications, Icons.Outlined.Notifications),
-        BottomNavItem("Ajustes", Screen.Ajustes.route, Icons.Filled.Settings, Icons.Outlined.Settings)
+    // Ocultar el BottomNav en auth, formularios y pantallas de detalle
+    val showBottomBar = currentRoute != null &&
+        !hiddenNavRoutes.contains(currentRoute) &&
+        !currentRoute.startsWith("detalle_paciente/") &&
+        !currentRoute.startsWith("detalle_medicamento/")
+
+    // 4 pestañas del bottom nav
+    val bottomNavItems = listOf(
+        BottomNavItem(
+            name = "Inicio",
+            route = Screen.Inicio.route,
+            selectedIcon = Icons.Filled.Home,
+            unselectedIcon = Icons.Outlined.Home
+        ),
+        BottomNavItem(
+            name = "Pacientes",
+            route = Screen.Pacientes.route,
+            selectedIcon = Icons.Filled.Person,
+            unselectedIcon = Icons.Outlined.Person
+        ),
+        BottomNavItem(
+            name = "Dispensador",
+            route = Screen.Dispensador.route,
+            selectedIcon = Icons.Filled.Memory,
+            unselectedIcon = Icons.Outlined.Memory
+        ),
+        BottomNavItem(
+            name = "Perfil",
+            route = Screen.Ajustes.route,
+            selectedIcon = Icons.Filled.Settings,
+            unselectedIcon = Icons.Outlined.Settings
+        )
     )
 
     Scaffold(
         bottomBar = {
-            val isAuthScreen = currentDestination?.route == Screen.Login.route || 
-                              currentDestination?.route == Screen.Register.route
-            
-            if (!isAuthScreen) {
+            if (showBottomBar) {
                 NavigationBar(
                     containerColor = Color.White,
                     tonalElevation = 8.dp
                 ) {
-                    items.forEach { item ->
-                        val selected = currentDestination?.hierarchy?.any { it.route == item.route } == true
+                    bottomNavItems.forEach { item ->
+                        val selected = navBackStackEntry?.destination
+                            ?.hierarchy
+                            ?.any { it.route == item.route } == true
+
                         NavigationBarItem(
-                            icon = { 
+                            icon = {
                                 Icon(
-                                    imageVector = if (selected) item.selectedIcon else item.unselectedIcon, 
-                                    contentDescription = item.name 
-                                ) 
+                                    imageVector = if (selected) item.selectedIcon else item.unselectedIcon,
+                                    contentDescription = item.name
+                                )
                             },
                             label = { Text(item.name) },
                             selected = selected,
@@ -116,39 +138,17 @@ fun MainContent() {
             }
         }
     ) { innerPadding ->
-        NavHost(
-            navController = navController,
-            startDestination = Screen.Login.route,
-            modifier = Modifier.padding(innerPadding)
-        ) {
-            composable(Screen.Login.route) { 
-                LoginScreen(
-                    onLoginSuccess = { navController.navigate(Screen.Inicio.route) { popUpTo(0) } }, 
-                    onNavigateToRegister = { navController.navigate(Screen.Register.route) }
-                ) 
-            }
-            composable(Screen.Register.route) {
-                RegisterScreen(
-                    onRegisterSuccess = { navController.navigate(Screen.Inicio.route) { popUpTo(0) } },
-                    onBackClick = { navController.popBackStack() }
-                )
-            }
-            composable(Screen.Inicio.route) { HomeScreen() }
-            composable(Screen.Tomas.route) { TomasScreen() }
-            composable(Screen.Dispensador.route) { HardwareScreen() }
-            composable(Screen.Alertas.route) { NotificationsScreen() }
-            composable(Screen.Ajustes.route) { 
-                SettingsScreen(onLogout = { 
-                    navController.navigate(Screen.Login.route) { popUpTo(0) } 
-                }) 
-            }
+        Surface(modifier = Modifier.padding(innerPadding)) {
+            NavGraph(
+                navController = navController
+            )
         }
     }
 }
 
 data class BottomNavItem(
-    val name: String, 
-    val route: String, 
+    val name: String,
+    val route: String,
     val selectedIcon: ImageVector,
     val unselectedIcon: ImageVector
 )

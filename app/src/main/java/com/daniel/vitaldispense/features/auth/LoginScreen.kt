@@ -1,6 +1,5 @@
 package com.daniel.vitaldispense.features.auth
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -31,6 +30,10 @@ fun LoginScreen(
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
+
+    // Estados para validación
+    var emailError by remember { mutableStateOf<String?>(null) }
+    var passwordError by remember { mutableStateOf<String?>(null) }
     
     val authState by viewModel.authState.collectAsState()
 
@@ -38,6 +41,35 @@ fun LoginScreen(
         if (authState is AuthResult.Success) {
             onLoginSuccess()
         }
+    }
+
+    // Función de validación
+    fun validate(): Boolean {
+        var isValid = true
+        
+        // Validar Email
+        if (email.isBlank()) {
+            emailError = "El correo no puede estar vacío"
+            isValid = false
+        } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            emailError = "Ingresa un correo electrónico válido"
+            isValid = false
+        } else {
+            emailError = null
+        }
+
+        // Validar Password
+        if (password.isBlank()) {
+            passwordError = "La contraseña no puede estar vacía"
+            isValid = false
+        } else if (password.length < 6) {
+            passwordError = "La contraseña debe tener al menos 6 caracteres"
+            isValid = false
+        } else {
+            passwordError = null
+        }
+
+        return isValid
     }
 
     Scaffold(
@@ -51,7 +83,7 @@ fun LoginScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // Logo estilizado con la nueva paleta
+            // Logo estilizado
             Surface(
                 modifier = Modifier.size(100.dp),
                 shape = RoundedCornerShape(28.dp),
@@ -79,27 +111,40 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(48.dp))
 
-            // Campos de texto refinados
+            // Campo: Email
             OutlinedTextField(
                 value = email,
-                onValueChange = { email = it },
+                onValueChange = { 
+                    email = it
+                    if (emailError != null) emailError = null 
+                },
                 label = { Text("Correo electrónico") },
                 modifier = Modifier.fillMaxWidth(),
                 leadingIcon = { Icon(Icons.Default.Email, contentDescription = null, tint = MaterialTheme.colorScheme.primary) },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                 singleLine = true,
                 shape = RoundedCornerShape(16.dp),
+                isError = emailError != null,
+                supportingText = {
+                    if (emailError != null) {
+                        Text(text = emailError!!, color = MaterialTheme.colorScheme.error)
+                    }
+                },
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = MaterialTheme.colorScheme.primary,
                     unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant
                 )
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
+            // Campo: Password
             OutlinedTextField(
                 value = password,
-                onValueChange = { password = it },
+                onValueChange = { 
+                    password = it
+                    if (passwordError != null) passwordError = null
+                },
                 label = { Text("Contraseña") },
                 modifier = Modifier.fillMaxWidth(),
                 leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null, tint = MaterialTheme.colorScheme.primary) },
@@ -113,6 +158,12 @@ fun LoginScreen(
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                 singleLine = true,
                 shape = RoundedCornerShape(16.dp),
+                isError = passwordError != null,
+                supportingText = {
+                    if (passwordError != null) {
+                        Text(text = passwordError!!, color = MaterialTheme.colorScheme.error)
+                    }
+                },
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = MaterialTheme.colorScheme.primary,
                     unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant
@@ -130,11 +181,15 @@ fun LoginScreen(
                 )
             }
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
-            // Botón de Login con contraste alto
+            // Botón de Login
             Button(
-                onClick = { viewModel.login(email, password) },
+                onClick = { 
+                    if (validate()) {
+                        viewModel.login(email, password)
+                    }
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
@@ -153,6 +208,7 @@ fun LoginScreen(
                 }
             }
 
+            // Error del Servidor (Firebase)
             if (authState is AuthResult.Error) {
                 Spacer(modifier = Modifier.height(16.dp))
                 Surface(
@@ -178,7 +234,7 @@ fun LoginScreen(
                 Text("¿No tienes una cuenta?", color = MaterialTheme.colorScheme.onSurfaceVariant)
                 TextButton(onClick = onNavigateToRegister) {
                     Text(
-                        text = "Regístrate", 
+                        text = "Regístrate aquí",
                         color = MaterialTheme.colorScheme.primary, 
                         fontWeight = FontWeight.Bold
                     )

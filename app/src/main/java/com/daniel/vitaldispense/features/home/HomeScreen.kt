@@ -8,33 +8,65 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+// ── Modelos mock ─────────────────────────────────────────────────────────────
+
+data class AlertaCama(
+    val cama: String,
+    val paciente: String,
+    val mensaje: String,
+    val esCritica: Boolean = false
+)
+
+data class ProximaDosis(
+    val hora: String,
+    val cama: String,
+    val paciente: String,
+    val medicamento: String,
+    val estado: EstadoDosis
+)
+
+enum class EstadoDosis { PENDIENTE, RETRASADA, COMPLETADA }
+
+// ── Pantalla principal ────────────────────────────────────────────────────────
+
 @Composable
-fun HomeScreen() {
-    val proximasTomas = listOf(
-        TomaMock("Paracetamol", "08:00 AM", "Daniel (Yo)", Color(0xFFE3F2FD), Color(0xFF1976D2)),
-        TomaMock("Ibuprofeno", "12:00 PM", "María (Madre)", Color(0xFFFFF3E0), Color(0xFFFFA726)),
-        TomaMock("Vitamina C", "09:00 PM", "Daniel (Yo)", Color(0xFFE8F5E9), Color(0xFF66BB6A))
+fun HomeScreen(
+    onNotificationsClick: () -> Unit = {}
+) {
+    val alertas = listOf(
+        AlertaCama("102", "María García", "Dosis retrasada 45 min", esCritica = true),
+        AlertaCama("110", "Carlos Ruiz", "Dosis retrasada 20 min", esCritica = true),
+        AlertaCama("107", "Ana López", "Stock bajo: Omeprazol", esCritica = false)
     )
 
-    Scaffold(
-        containerColor = Color(0xFFF8F9FB)
-    ) { padding ->
+    val proximasDosis = listOf(
+        ProximaDosis("08:00", "101", "Juan Pérez",    "Paracetamol 500mg",  EstadoDosis.COMPLETADA),
+        ProximaDosis("08:30", "102", "María García",  "Metformina 850mg",   EstadoDosis.RETRASADA),
+        ProximaDosis("09:00", "104", "Elena Solís",   "Amlodipino 5mg",     EstadoDosis.PENDIENTE),
+        ProximaDosis("10:00", "106", "Roberto Díaz",  "Ibuprofeno 400mg",   EstadoDosis.PENDIENTE),
+        ProximaDosis("11:00", "110", "Carlos Ruiz",   "Losartán 50mg",      EstadoDosis.RETRASADA),
+        ProximaDosis("12:00", "112", "Sofía Martín",  "Vitamina D 1000UI",  EstadoDosis.PENDIENTE)
+    )
+
+    Scaffold(containerColor = Color(0xFFF5F6FA)) { padding ->
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(padding)
+                .padding(padding),
+            contentPadding = PaddingValues(bottom = 100.dp)
         ) {
-            // Header Compacto y Clean
+
+            // ── Header ────────────────────────────────────────────────────────
             item {
                 Row(
                     modifier = Modifier
@@ -45,112 +77,246 @@ fun HomeScreen() {
                 ) {
                     Column {
                         Text(
-                            text = "Hola, Daniel",
+                            text = "Estación de Enfermería",
                             style = MaterialTheme.typography.headlineSmall,
                             fontWeight = FontWeight.ExtraBold,
                             color = Color(0xFF1A1C1E)
                         )
                         Text(
-                            text = "Tu salud está al día",
+                            text = "Sala B · Ala Norte · Turno Matutino",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = Color.Gray
+                            color = Color(0xFF1976D2),
+                            fontWeight = FontWeight.Medium
                         )
                     }
-                    IconButton(
-                        onClick = { },
-                        modifier = Modifier.background(Color.White, CircleShape)
+                    BadgedBox(
+                        badge = {
+                            Badge(containerColor = Color(0xFFD32F2F)) {
+                                Text("${alertas.count { it.esCritica }}")
+                            }
+                        }
                     ) {
-                        Icon(Icons.Default.Notifications, contentDescription = null, tint = Color(0xFF1976D2))
-                    }
-                }
-            }
-
-            // Card de Adherencia Minimalista
-            item {
-                Card(
-                    modifier = Modifier
-                        .padding(horizontal = 24.dp)
-                        .fillMaxWidth(),
-                    shape = RoundedCornerShape(24.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-                ) {
-                    Row(
-                        modifier = Modifier.padding(20.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Box(modifier = Modifier.size(60.dp), contentAlignment = Alignment.Center) {
-                            CircularProgressIndicator(
-                                progress = 0.92f,
-                                modifier = Modifier.fillMaxSize(),
-                                strokeWidth = 6.dp,
-                                color = Color(0xFF1976D2),
-                                trackColor = Color(0xFFE3F2FD)
+                        IconButton(
+                            onClick = onNotificationsClick,
+                            modifier = Modifier.background(Color.White, CircleShape)
+                        ) {
+                            Icon(
+                                Icons.Default.Notifications,
+                                contentDescription = "Notificaciones",
+                                tint = Color(0xFF1976D2)
                             )
-                            Text("92%", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = Color(0xFF1976D2))
-                        }
-                        Spacer(modifier = Modifier.width(16.dp))
-                        Column {
-                            Text("Buen progreso", fontWeight = FontWeight.Bold)
-                            Text("Has cumplido con casi todas tus dosis", fontSize = 12.sp, color = Color.Gray)
                         }
                     }
                 }
             }
 
+            // ── Resumen rápido ────────────────────────────────────────────────
             item {
-                Text(
-                    text = "Próximas tomas",
-                    modifier = Modifier.padding(horizontal = 24.dp, vertical = 24.dp),
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 24.dp)
+                        .padding(bottom = 20.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    ResumenCard(
+                        label = "Pacientes",
+                        valor = "8",
+                        color = Color(0xFF1976D2),
+                        modifier = Modifier.weight(1f)
+                    )
+                    ResumenCard(
+                        label = "Alertas",
+                        valor = "${alertas.count { it.esCritica }}",
+                        color = Color(0xFFD32F2F),
+                        modifier = Modifier.weight(1f)
+                    )
+                    ResumenCard(
+                        label = "Completadas",
+                        valor = "${proximasDosis.count { it.estado == EstadoDosis.COMPLETADA }}",
+                        color = Color(0xFF2E7D32),
+                        modifier = Modifier.weight(1f)
+                    )
+                    ResumenCard(
+                        label = "Pendientes",
+                        valor = "${proximasDosis.count { it.estado == EstadoDosis.PENDIENTE }}",
+                        color = Color(0xFFFFA726),
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+            }
+
+            // ── Alertas críticas ──────────────────────────────────────────────
+            if (alertas.isNotEmpty()) {
+                item {
+                    SectionHeader(
+                        titulo = "Alertas Activas",
+                        modifier = Modifier.padding(horizontal = 24.dp, vertical = 4.dp)
+                    )
+                }
+                items(alertas) { alerta ->
+                    AlertaCamaCard(alerta)
+                }
+                item { Spacer(modifier = Modifier.height(8.dp)) }
+            }
+
+            // ── Próximas dosis ────────────────────────────────────────────────
+            item {
+                SectionHeader(
+                    titulo = "Ronda de Medicación",
+                    modifier = Modifier.padding(
+                        start = 24.dp, end = 24.dp,
+                        top = 12.dp, bottom = 4.dp
+                    )
                 )
             }
-
-            items(proximasTomas) { toma ->
-                CleanTomaCard(toma)
+            items(proximasDosis) { dosis ->
+                ProximaDosisCard(dosis)
             }
-            
-            item { Spacer(modifier = Modifier.height(100.dp)) }
+        }
+    }
+}
+
+// ── Componentes ───────────────────────────────────────────────────────────────
+
+@Composable
+fun ResumenCard(label: String, valor: String, color: Color, modifier: Modifier = Modifier) {
+    Card(
+        modifier = modifier,
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(1.dp)
+    ) {
+        Column(
+            modifier = Modifier.padding(vertical = 12.dp, horizontal = 8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(valor, fontSize = 22.sp, fontWeight = FontWeight.ExtraBold, color = color)
+            Text(label, style = MaterialTheme.typography.labelSmall, color = Color.Gray)
         }
     }
 }
 
 @Composable
-fun CleanTomaCard(toma: TomaMock) {
+fun AlertaCamaCard(alerta: AlertaCama) {
+    val bgColor = if (alerta.esCritica) Color(0xFFFFEBEE) else Color(0xFFFFF8E1)
+    val borderColor = if (alerta.esCritica) Color(0xFFD32F2F) else Color(0xFFFFA726)
+    val textColor = if (alerta.esCritica) Color(0xFFD32F2F) else Color(0xFFF57F17)
+
     Card(
         modifier = Modifier
-            .padding(horizontal = 24.dp, vertical = 6.dp)
-            .fillMaxWidth(),
-        shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+            .fillMaxWidth()
+            .padding(horizontal = 24.dp, vertical = 4.dp),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = bgColor),
+        elevation = CardDefaults.cardElevation(0.dp)
     ) {
         Row(
-            modifier = Modifier.padding(12.dp),
+            modifier = Modifier.padding(14.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
                 modifier = Modifier
                     .size(44.dp)
-                    .background(toma.bgColor, RoundedCornerShape(12.dp)),
+                    .background(borderColor.copy(alpha = 0.15f), RoundedCornerShape(12.dp)),
                 contentAlignment = Alignment.Center
             ) {
-                Text(text = "💊", fontSize = 20.sp)
+                Icon(
+                    Icons.Default.Warning,
+                    contentDescription = null,
+                    tint = borderColor,
+                    modifier = Modifier.size(22.dp)
+                )
             }
-            Spacer(modifier = Modifier.width(12.dp))
+            Spacer(modifier = Modifier.width(14.dp))
             Column(modifier = Modifier.weight(1f)) {
-                Text(toma.nombre, fontWeight = FontWeight.Bold, fontSize = 15.sp)
-                Text(toma.paciente, fontSize = 12.sp, color = Color.Gray)
+                Text(
+                    text = "Cama ${alerta.cama} · ${alerta.paciente}",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 14.sp,
+                    color = Color(0xFF1A1C1E)
+                )
+                Text(
+                    text = alerta.mensaje,
+                    fontSize = 12.sp,
+                    color = textColor,
+                    fontWeight = FontWeight.Medium
+                )
             }
-            Text(
-                text = toma.hora,
-                fontWeight = FontWeight.Bold,
-                fontSize = 13.sp,
-                color = Color(0xFF1976D2)
-            )
         }
     }
 }
 
-data class TomaMock(val nombre: String, val hora: String, val paciente: String, val bgColor: Color, val iconColor: Color)
+@Composable
+fun ProximaDosisCard(dosis: ProximaDosis) {
+    val (bgColor, estadoColor, estadoLabel) = when (dosis.estado) {
+        EstadoDosis.COMPLETADA -> Triple(Color(0xFFE8F5E9), Color(0xFF2E7D32), "Completada")
+        EstadoDosis.RETRASADA  -> Triple(Color(0xFFFFEBEE), Color(0xFFD32F2F), "Retrasada")
+        EstadoDosis.PENDIENTE  -> Triple(Color(0xFFF0F7FF), Color(0xFF1976D2), "Pendiente")
+    }
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 24.dp, vertical = 4.dp),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(1.dp)
+    ) {
+        Row(
+            modifier = Modifier.padding(14.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Hora
+            Surface(
+                color = Color(0xFFF0F7FF),
+                shape = RoundedCornerShape(10.dp)
+            ) {
+                Text(
+                    text = dosis.hora,
+                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 8.dp),
+                    fontWeight = FontWeight.ExtraBold,
+                    fontSize = 13.sp,
+                    color = Color(0xFF1976D2)
+                )
+            }
+            Spacer(modifier = Modifier.width(12.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = dosis.medicamento,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 14.sp,
+                    color = Color(0xFF1A1C1E)
+                )
+                Text(
+                    text = "Cama ${dosis.cama} · ${dosis.paciente}",
+                    fontSize = 12.sp,
+                    color = Color.Gray
+                )
+            }
+            Surface(
+                color = bgColor,
+                shape = RoundedCornerShape(8.dp)
+            ) {
+                Text(
+                    text = estadoLabel,
+                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = estadoColor
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun SectionHeader(titulo: String, modifier: Modifier = Modifier) {
+    Text(
+        text = titulo,
+        modifier = modifier,
+        style = MaterialTheme.typography.titleMedium,
+        fontWeight = FontWeight.Bold,
+        color = Color(0xFF1A1C1E)
+    )
+}
