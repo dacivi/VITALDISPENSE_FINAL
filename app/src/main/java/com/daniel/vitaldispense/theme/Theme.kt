@@ -1,15 +1,12 @@
 package com.daniel.vitaldispense.ui.theme
 
 import android.app.Activity
-import android.graphics.Color as AndroidColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
-import androidx.compose.ui.graphics.Color
 
 private val LightColorScheme = lightColorScheme(
     primary = PrimaryMedicalBlue,
@@ -39,9 +36,6 @@ fun VITALDISPENSE_FINALTheme(
         SideEffect {
             val window = (view.context as Activity).window
             WindowCompat.setDecorFitsSystemWindows(window, false)
-            
-            window.statusBarColor = AndroidColor.TRANSPARENT
-            window.navigationBarColor = AndroidColor.TRANSPARENT
             
             val insetsController = WindowCompat.getInsetsController(window, view)
             // Barra de estado: iconos oscuros porque el fondo suele ser claro (o azul, pero el sistema puede manejarlo)

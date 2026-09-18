@@ -6,7 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.daniel.vitaldispense.features.auth.LoginScreen
 import com.daniel.vitaldispense.features.auth.RegisterScreen
-import com.daniel.vitaldispense.features.hardware.HardwareScreen
+import com.daniel.vitaldispense.features.dispensador.DispensadorScreen
 import com.daniel.vitaldispense.features.home.HomeScreen
 import com.daniel.vitaldispense.features.notifications.NotificationsScreen
 import com.daniel.vitaldispense.features.pacientes.AgregarPacienteScreen
@@ -93,7 +93,7 @@ fun NavGraph(navController: NavHostController) {
 
         // ── Tab 3: Dispensador ────────────────────────────────────────────────
         composable(Screen.Dispensador.route) {
-            HardwareScreen()
+            DispensadorScreen()
         }
 
         // ── Tab 4: Perfil / Ajustes ───────────────────────────────────────────
