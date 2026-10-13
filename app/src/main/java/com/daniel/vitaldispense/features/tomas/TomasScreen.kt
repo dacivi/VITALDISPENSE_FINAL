@@ -1,5 +1,7 @@
 package com.daniel.vitaldispense.features.tomas
 
+import com.daniel.vitaldispense.ui.theme.*
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -17,14 +19,14 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun TomasScreen() {
     val tomas = listOf(
-        TomaItem("Paracetamol", "08:00 AM", "Daniel (Yo)", Color(0xFFFFEBEE)),
-        TomaItem("Ibuprofeno", "12:00 PM", "María (Madre)", Color(0xFFFFF3E0)),
-        TomaItem("Vitamina C", "09:00 PM", "Daniel (Yo)", Color(0xFFE8F5E9)),
-        TomaItem("Aspirina", "10:00 PM", "Carlos (Padre)", Color(0xFFE3F2FD))
+        TomaItem("Paracetamol", "08:00 AM", "Daniel (Yo)", ErrorSoft),
+        TomaItem("Ibuprofeno", "12:00 PM", "María (Madre)", WarningSoft),
+        TomaItem("Vitamina C", "09:00 PM", "Daniel (Yo)", SuccessSoft),
+        TomaItem("Aspirina", "10:00 PM", "Carlos (Padre)", PrimarySoft)
     )
 
     Scaffold(
-        containerColor = Color(0xFFF7F9FC)
+        containerColor = BackgroundSecondary
     ) { padding ->
         Column(
             modifier = Modifier
@@ -35,7 +37,7 @@ fun TomasScreen() {
                 text = "Tomas Próximas",
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold,
-                color = Color(0xFF1A1C1E),
+                color = TextPrimary,
                 modifier = Modifier.padding(horizontal = 24.dp, vertical = 32.dp)
             )
 
@@ -84,11 +86,11 @@ fun TomaDetailedCard(toma: TomaItem) {
                 Text(
                     text = toma.paciente,
                     style = MaterialTheme.typography.bodySmall,
-                    color = Color.Gray
+                    color = TextSecondary
                 )
             }
             Surface(
-                color = Color(0xFFF0F7FF),
+                color = PrimarySoft,
                 shape = RoundedCornerShape(12.dp)
             ) {
                 Text(
@@ -96,7 +98,7 @@ fun TomaDetailedCard(toma: TomaItem) {
                     modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
                     style = MaterialTheme.typography.labelLarge,
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFF1976D2)
+                    color = BrandPrimary
                 )
             }
         }

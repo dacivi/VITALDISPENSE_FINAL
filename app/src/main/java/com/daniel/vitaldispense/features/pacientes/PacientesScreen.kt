@@ -1,5 +1,7 @@
 package com.daniel.vitaldispense.features.pacientes
 
+import com.daniel.vitaldispense.ui.theme.*
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -69,7 +71,7 @@ fun PacientesScreen(
     }
 
     Scaffold(
-        containerColor = Color(0xFFF5F6FA),
+        containerColor = BackgroundSecondary,
         floatingActionButton = {
             ExtendedFloatingActionButton(
                 onClick = onAgregarPaciente,
@@ -99,12 +101,12 @@ fun PacientesScreen(
                         text = "Pacientes",
                         style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.ExtraBold,
-                        color = Color(0xFF1A1C1E)
+                        color = TextPrimary
                     )
                     Text(
                         text = "${pacientes.size} pacientes · ${pacientes.count { it.estado == EstadoPaciente.CRITICO }} críticos",
                         style = MaterialTheme.typography.bodyMedium,
-                        color = Color(0xFF1976D2),
+                        color = BrandPrimary,
                         fontWeight = FontWeight.Medium
                     )
                 }
@@ -120,7 +122,7 @@ fun PacientesScreen(
                         Icon(
                             Icons.Default.Search,
                             contentDescription = null,
-                            tint = Color.Gray
+                            tint = TextSecondary
                         )
                     },
                     modifier = Modifier
@@ -157,13 +159,13 @@ fun PacientesScreen(
                         label = "Críticos",
                         count = pacientes.count { it.estado == EstadoPaciente.CRITICO },
                         activo = false,
-                        color = Color(0xFFD32F2F)
+                        color = ErrorRed
                     ) { busqueda = "" }
                     FiltroChip(
                         label = "Con alergias",
                         count = pacientes.count { it.tieneAlergia },
                         activo = false,
-                        color = Color(0xFFE65100)
+                        color = WarningDark
                     ) { busqueda = "" }
                 }
             }
@@ -177,10 +179,10 @@ fun PacientesScreen(
                             .padding(vertical = 60.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text("Sin resultados", color = Color.Gray, fontWeight = FontWeight.Bold)
+                        Text("Sin resultados", color = TextSecondary, fontWeight = FontWeight.Bold)
                         Text(
                             "Intenta con otro nombre o cama",
-                            color = Color.LightGray,
+                            color = OutlineGray,
                             style = MaterialTheme.typography.bodySmall
                         )
                     }
@@ -202,9 +204,9 @@ fun PacientesScreen(
 @Composable
 fun PacienteCard(paciente: PacienteLista, onClick: () -> Unit) {
     val (camaColor, camaBg) = when (paciente.estado) {
-        EstadoPaciente.CRITICO    -> Color(0xFFD32F2F) to Color(0xFFFFEBEE)
-        EstadoPaciente.ACTIVO     -> Color(0xFF1976D2) to Color(0xFFF0F7FF)
-        EstadoPaciente.DISPONIBLE -> Color(0xFF4CAF50) to Color(0xFFE8F5E9)
+        EstadoPaciente.CRITICO    -> ErrorRed to ErrorSoft
+        EstadoPaciente.ACTIVO     -> BrandPrimary to PrimarySoft
+        EstadoPaciente.DISPONIBLE -> SuccessGreen to SuccessSoft
     }
 
     Card(
@@ -243,20 +245,20 @@ fun PacienteCard(paciente: PacienteLista, onClick: () -> Unit) {
                         text = paciente.nombre,
                         fontWeight = FontWeight.Bold,
                         fontSize = 15.sp,
-                        color = Color(0xFF1A1C1E)
+                        color = TextPrimary
                     )
                     if (paciente.tieneAlergia) {
                         Spacer(modifier = Modifier.width(6.dp))
                         Box(
                             modifier = Modifier
                                 .size(18.dp)
-                                .background(Color(0xFFFFEBEE), CircleShape),
+                                .background(ErrorSoft, CircleShape),
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
                                 Icons.Default.Warning,
                                 contentDescription = "Tiene alergias",
-                                tint = Color(0xFFD32F2F),
+                                tint = ErrorRed,
                                 modifier = Modifier.size(11.dp)
                             )
                         }
@@ -265,20 +267,20 @@ fun PacienteCard(paciente: PacienteLista, onClick: () -> Unit) {
                 Text(
                     text = paciente.diagnostico,
                     fontSize = 12.sp,
-                    color = Color.Gray,
+                    color = TextSecondary,
                     maxLines = 1
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Surface(
-                        color = Color(0xFFF0F7FF),
+                        color = PrimarySoft,
                         shape = RoundedCornerShape(6.dp)
                     ) {
                         Text(
                             text = paciente.habitacion,
                             modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
                             fontSize = 10.sp,
-                            color = Color(0xFF1976D2),
+                            color = BrandPrimary,
                             fontWeight = FontWeight.Medium
                         )
                     }
@@ -286,7 +288,7 @@ fun PacienteCard(paciente: PacienteLista, onClick: () -> Unit) {
                     Text(
                         text = "Próx: ${paciente.proximaDosis}",
                         fontSize = 11.sp,
-                        color = Color.Gray
+                        color = TextSecondary
                     )
                 }
             }
@@ -294,7 +296,7 @@ fun PacienteCard(paciente: PacienteLista, onClick: () -> Unit) {
             Icon(
                 Icons.Default.ChevronRight,
                 contentDescription = null,
-                tint = Color.LightGray,
+                tint = OutlineGray,
                 modifier = Modifier.size(20.dp)
             )
         }
@@ -306,12 +308,12 @@ fun FiltroChip(
     label: String,
     count: Int,
     activo: Boolean,
-    color: Color = Color(0xFF1976D2),
+    color: Color = BrandPrimary,
     onClick: () -> Unit
 ) {
     val bgColor = if (activo) color.copy(alpha = 0.12f) else Color.White
-    val textColor = if (activo) color else Color.Gray
-    val borderColor = if (activo) color.copy(alpha = 0.4f) else Color.LightGray
+    val textColor = if (activo) color else TextSecondary
+    val borderColor = if (activo) color.copy(alpha = 0.4f) else OutlineGray
 
     Surface(
         onClick = onClick,

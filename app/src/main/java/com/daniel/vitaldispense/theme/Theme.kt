@@ -9,20 +9,30 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
 private val LightColorScheme = lightColorScheme(
-    primary = PrimaryMedicalBlue,
-    onPrimary = SurfaceWhite,
-    secondary = SecondaryMedicalBlue,
-    onSecondary = SurfaceWhite,
-    background = BackgroundLight,
-    onBackground = TextDark,
-    surface = SurfaceWhite,
-    onSurface = TextDark,
+    primary = BrandPrimary,
+    onPrimary = BackgroundMain,
+    primaryContainer = PrimarySoft,
+    onPrimaryContainer = BrandPrimary,
+    secondary = BrandSecondary,
+    onSecondary = BackgroundMain,
+    secondaryContainer = PrimarySoft,
+    onSecondaryContainer = BrandSecondary,
+    tertiary = AccentTeal,
+    onTertiary = BackgroundMain,
+    tertiaryContainer = AccentSoft,
+    onTertiaryContainer = AccentTeal,
+    background = BackgroundSecondary,
+    onBackground = TextPrimary,
+    surface = BackgroundMain,
+    onSurface = TextPrimary,
+    surfaceVariant = BackgroundSecondary,
+    onSurfaceVariant = TextSecondary,
     error = ErrorRed,
-    onError = SurfaceWhite,
-    surfaceVariant = BlueSoft,
-    onSurfaceVariant = TextGray,
-    tertiary = AlertCoral,
-    onTertiary = SurfaceWhite
+    onError = BackgroundMain,
+    errorContainer = ErrorSoft,
+    onErrorContainer = ErrorRed,
+    outline = OutlineGray,
+    outlineVariant = DividerGray
 )
 
 @Composable

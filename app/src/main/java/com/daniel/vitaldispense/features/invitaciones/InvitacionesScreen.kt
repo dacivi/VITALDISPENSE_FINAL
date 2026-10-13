@@ -1,5 +1,7 @@
 package com.daniel.vitaldispense.features.invitaciones
 
+import com.daniel.vitaldispense.ui.theme.*
+
 import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
@@ -173,7 +175,7 @@ fun InvitacionItem(invitacion: Invitacion) {
                 Text("Estado: ${invitacion.estado ?: "Pendiente"}", style = MaterialTheme.typography.bodySmall)
             }
             Badge(
-                containerColor = if (invitacion.estado == "aceptada") Color(0xFF4CAF50) else Color(0xFFFFC107)
+                containerColor = if (invitacion.estado == "aceptada") SuccessGreen else WarningOrange
             ) {
                 Text(invitacion.estado?.uppercase() ?: "P")
             }
@@ -188,9 +190,9 @@ fun EmptyState() {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Icon(Icons.Default.Info, contentDescription = null, modifier = Modifier.size(64.dp), tint = Color.LightGray)
+        Icon(Icons.Default.Info, contentDescription = null, modifier = Modifier.size(64.dp), tint = OutlineGray)
         Spacer(modifier = Modifier.height(16.dp))
-        Text("No hay invitaciones enviadas", color = Color.Gray)
-        Text("Usa el botón + para enviar la primera", style = MaterialTheme.typography.bodySmall, color = Color.LightGray)
+        Text("No hay invitaciones enviadas", color = TextSecondary)
+        Text("Usa el botón + para enviar la primera", style = MaterialTheme.typography.bodySmall, color = OutlineGray)
     }
 }

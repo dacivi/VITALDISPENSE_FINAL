@@ -1,5 +1,7 @@
 package com.daniel.vitaldispense.features.paciente
 
+import com.daniel.vitaldispense.ui.theme.*
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -181,7 +183,7 @@ fun DetalleMedicamentoScreen(
                             .height(56.dp),
                         shape = RoundedCornerShape(16.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = if (medicamento.tomado) Color.Gray else MaterialTheme.colorScheme.primary
+                            containerColor = if (medicamento.tomado) TextSecondary else MaterialTheme.colorScheme.primary
                         )
                     ) {
                         Icon(Icons.Default.CheckCircle, contentDescription = null)

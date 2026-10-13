@@ -1,5 +1,7 @@
 package com.daniel.vitaldispense.features.notifications
 
+import com.daniel.vitaldispense.ui.theme.*
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -41,7 +43,7 @@ fun NotificationsScreen() {
     )
 
     Scaffold(
-        containerColor = Color(0xFFF7F9FC)
+        containerColor = BackgroundSecondary
     ) { padding ->
         Column(
             modifier = Modifier
@@ -78,8 +80,8 @@ fun NotificationsScreen() {
 @Composable
 fun NotificationCard(notification: NotificationItem) {
     val (icon, color) = when (notification.type) {
-        NotificationType.SUCCESS -> Icons.Default.CheckCircle to Color(0xFF4CAF50)
-        NotificationType.WARNING -> Icons.Default.Warning to Color(0xFFFFA726)
+        NotificationType.SUCCESS -> Icons.Default.CheckCircle to SuccessGreen
+        NotificationType.WARNING -> Icons.Default.Warning to WarningOrange
         NotificationType.INFO -> Icons.Default.Notifications to MaterialTheme.colorScheme.primary
         NotificationType.INVITATION -> Icons.Default.PersonAdd to MaterialTheme.colorScheme.primary
     }

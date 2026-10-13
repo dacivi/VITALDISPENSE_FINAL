@@ -1,6 +1,11 @@
 package com.daniel.vitaldispense.features.auth
 
+import com.daniel.vitaldispense.ui.theme.*
+
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -15,12 +20,15 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.daniel.vitaldispense.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -60,9 +68,20 @@ fun RegisterScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
+                .verticalScroll(rememberScrollState())
                 .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            // Logo Vital Dispense
+            Image(
+                painter = painterResource(id = R.drawable.logo_vital),
+                contentDescription = "VitalDispense",
+                modifier = Modifier.width(160.dp),
+                contentScale = ContentScale.Fit
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
             Text(
                 text = "Únete a VitalDispense",
                 style = MaterialTheme.typography.headlineSmall,
@@ -72,7 +91,7 @@ fun RegisterScreen(
             Text(
                 text = "Solo usuarios con invitación pueden registrarse",
                 style = MaterialTheme.typography.bodyMedium,
-                color = Color.Gray
+                color = TextSecondary
             )
 
             Spacer(modifier = Modifier.height(32.dp))

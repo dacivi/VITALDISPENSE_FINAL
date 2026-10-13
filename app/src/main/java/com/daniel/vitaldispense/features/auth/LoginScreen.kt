@@ -1,5 +1,6 @@
 package com.daniel.vitaldispense.features.auth
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -13,6 +14,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -20,6 +23,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.daniel.vitaldispense.R
 
 @Composable
 fun LoginScreen(
@@ -83,26 +87,16 @@ fun LoginScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // Logo estilizado
-            Surface(
-                modifier = Modifier.size(100.dp),
-                shape = RoundedCornerShape(28.dp),
-                color = MaterialTheme.colorScheme.primaryContainer,
-                tonalElevation = 2.dp
-            ) {
-                Box(contentAlignment = Alignment.Center) {
-                    Text(text = "💊", fontSize = 48.sp)
-                }
-            }
-
-            Spacer(modifier = Modifier.height(32.dp))
-
-            Text(
-                text = "VitalDispense",
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary
+            // Logo Vital Dispense (incluye el nombre de la app)
+            Image(
+                painter = painterResource(id = R.drawable.logo_vital),
+                contentDescription = "VitalDispense",
+                modifier = Modifier.width(220.dp),
+                contentScale = ContentScale.Fit
             )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
             Text(
                 text = "Gestión inteligente de medicamentos",
                 style = MaterialTheme.typography.bodyMedium,

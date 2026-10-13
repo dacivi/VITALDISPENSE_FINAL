@@ -1,5 +1,7 @@
 package com.daniel.vitaldispense.features.pacientes
 
+import com.daniel.vitaldispense.ui.theme.*
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -72,14 +74,14 @@ fun AgregarPacienteScreen(
     )
 
     Scaffold(
-        containerColor = Color(0xFFF5F6FA),
+        containerColor = BackgroundSecondary,
         topBar = {
             TopAppBar(
                 title = {
                     Text(
                         text = "Nuevo Paciente",
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF1A1C1E)
+                        color = TextPrimary
                     )
                 },
                 navigationIcon = {
@@ -89,12 +91,12 @@ fun AgregarPacienteScreen(
                         Icon(
                             Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Atrás",
-                            tint = Color(0xFF1976D2)
+                            tint = BrandPrimary
                         )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFFF5F6FA)
+                    containerColor = BackgroundSecondary
                 )
             )
         }
@@ -113,7 +115,7 @@ fun AgregarPacienteScreen(
 
             HorizontalDivider(
                 modifier = Modifier.padding(top = 12.dp),
-                color = Color(0xFFE0E0E0)
+                color = DividerGray
             )
 
             // ── Contenido del paso ────────────────────────────────────────────
@@ -132,7 +134,7 @@ fun AgregarPacienteScreen(
             }
 
             // ── Botones de navegación ─────────────────────────────────────────
-            HorizontalDivider(color = Color(0xFFE0E0E0))
+            HorizontalDivider(color = DividerGray)
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -168,7 +170,7 @@ fun AgregarPacienteScreen(
                     shape = RoundedCornerShape(14.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = if (pasoActual == pasos.size - 1)
-                            Color(0xFF2E7D32) else MaterialTheme.colorScheme.primary
+                            SuccessDark else MaterialTheme.colorScheme.primary
                     )
                 ) {
                     if (pasoActual == pasos.size - 1) {
@@ -205,9 +207,9 @@ fun StepperIndicator(pasos: List<String>, pasoActual: Int, modifier: Modifier = 
                     .clip(CircleShape)
                     .background(
                         when {
-                            completado -> Color(0xFF2E7D32)
-                            activo     -> Color(0xFF1976D2)
-                            else       -> Color(0xFFE0E0E0)
+                            completado -> SuccessDark
+                            activo     -> BrandPrimary
+                            else       -> DividerGray
                         }
                     ),
                 contentAlignment = Alignment.Center
@@ -222,7 +224,7 @@ fun StepperIndicator(pasos: List<String>, pasoActual: Int, modifier: Modifier = 
                 } else {
                     Text(
                         text = (index + 1).toString(),
-                        color = if (activo) Color.White else Color.Gray,
+                        color = if (activo) Color.White else TextSecondary,
                         fontSize = 13.sp,
                         fontWeight = FontWeight.Bold
                     )
@@ -236,7 +238,7 @@ fun StepperIndicator(pasos: List<String>, pasoActual: Int, modifier: Modifier = 
                         .weight(1f)
                         .height(2.dp)
                         .background(
-                            if (completado) Color(0xFF2E7D32) else Color(0xFFE0E0E0)
+                            if (completado) SuccessDark else DividerGray
                         )
                 )
             }
@@ -249,7 +251,7 @@ fun StepperIndicator(pasos: List<String>, pasoActual: Int, modifier: Modifier = 
         Text(
             text = "Paso ${pasoActual + 1} de ${pasos.size} · ${pasos[pasoActual]}",
             style = MaterialTheme.typography.bodySmall,
-            color = Color(0xFF1976D2),
+            color = BrandPrimary,
             fontWeight = FontWeight.Medium
         )
     }
@@ -393,13 +395,13 @@ fun PasoInfoClinica(form: FormPaciente, onUpdate: (FormPaciente) -> Unit) {
                 onCheckedChange = { onUpdate(form.copy(tieneAlergia = it)) },
                 colors = SwitchDefaults.colors(
                     checkedThumbColor = Color.White,
-                    checkedTrackColor = Color(0xFFD32F2F)
+                    checkedTrackColor = ErrorRed
                 )
             )
             Text(
                 text = if (form.tieneAlergia) "Sí, especificar abajo" else "No",
                 fontWeight = FontWeight.Medium,
-                color = if (form.tieneAlergia) Color(0xFFD32F2F) else Color.Gray
+                color = if (form.tieneAlergia) ErrorRed else TextSecondary
             )
         }
     }
@@ -410,7 +412,7 @@ fun PasoInfoClinica(form: FormPaciente, onUpdate: (FormPaciente) -> Unit) {
                 .fillMaxWidth()
                 .padding(bottom = 16.dp),
             shape = RoundedCornerShape(14.dp),
-            colors = CardDefaults.cardColors(containerColor = Color(0xFFFFEBEE)),
+            colors = CardDefaults.cardColors(containerColor = ErrorSoft),
             elevation = CardDefaults.cardElevation(0.dp)
         ) {
             Row(
@@ -420,7 +422,7 @@ fun PasoInfoClinica(form: FormPaciente, onUpdate: (FormPaciente) -> Unit) {
                 Icon(
                     Icons.Default.Warning,
                     contentDescription = null,
-                    tint = Color(0xFFD32F2F),
+                    tint = ErrorRed,
                     modifier = Modifier.size(20.dp).padding(top = 2.dp)
                 )
                 Spacer(modifier = Modifier.width(10.dp))
@@ -432,8 +434,8 @@ fun PasoInfoClinica(form: FormPaciente, onUpdate: (FormPaciente) -> Unit) {
                     shape = RoundedCornerShape(10.dp),
                     minLines = 2,
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = Color(0xFFD32F2F),
-                        unfocusedBorderColor = Color(0xFFEF9A9A),
+                        focusedBorderColor = ErrorRed,
+                        unfocusedBorderColor = ErrorRed,
                         focusedContainerColor = Color.White,
                         unfocusedContainerColor = Color.White
                     )
@@ -452,7 +454,7 @@ fun PasoInfoClinica(form: FormPaciente, onUpdate: (FormPaciente) -> Unit) {
             minLines = 2,
             colors = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor = MaterialTheme.colorScheme.primary,
-                unfocusedBorderColor = Color.LightGray,
+                unfocusedBorderColor = OutlineGray,
                 focusedContainerColor = Color.White,
                 unfocusedContainerColor = Color.White
             )
@@ -468,7 +470,7 @@ fun PasoInfoClinica(form: FormPaciente, onUpdate: (FormPaciente) -> Unit) {
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(10.dp))
                         .background(
-                            if (seleccionado) Color(0xFFF0F7FF) else Color.White
+                            if (seleccionado) PrimarySoft else Color.White
                         )
                         .padding(horizontal = 14.dp, vertical = 10.dp),
                     verticalAlignment = Alignment.CenterVertically
@@ -485,7 +487,7 @@ fun PasoInfoClinica(form: FormPaciente, onUpdate: (FormPaciente) -> Unit) {
                         via,
                         fontSize = 14.sp,
                         fontWeight = if (seleccionado) FontWeight.SemiBold else FontWeight.Normal,
-                        color = if (seleccionado) Color(0xFF1976D2) else Color(0xFF1A1C1E)
+                        color = if (seleccionado) BrandPrimary else TextPrimary
                     )
                 }
             }
@@ -550,14 +552,14 @@ fun PasoMedicacion(form: FormPaciente, onUpdate: (FormPaciente) -> Unit) {
         Card(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(16.dp),
-            colors = CardDefaults.cardColors(containerColor = Color(0xFFF0F7FF)),
+            colors = CardDefaults.cardColors(containerColor = PrimarySoft),
             elevation = CardDefaults.cardElevation(0.dp)
         ) {
             Column(modifier = Modifier.padding(16.dp)) {
                 Text(
                     "Resumen del registro",
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFF1976D2),
+                    color = BrandPrimary,
                     style = MaterialTheme.typography.labelLarge
                 )
                 Spacer(modifier = Modifier.height(8.dp))
@@ -572,14 +574,14 @@ fun PasoMedicacion(form: FormPaciente, onUpdate: (FormPaciente) -> Unit) {
                         Icon(
                             Icons.Default.Warning,
                             contentDescription = null,
-                            tint = Color(0xFFD32F2F),
+                            tint = ErrorRed,
                             modifier = Modifier.size(14.dp)
                         )
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(
                             "Alergias: ${form.alergias}",
                             fontSize = 12.sp,
-                            color = Color(0xFFD32F2F),
+                            color = ErrorRed,
                             fontWeight = FontWeight.Medium
                         )
                     }
@@ -594,8 +596,8 @@ fun PasoMedicacion(form: FormPaciente, onUpdate: (FormPaciente) -> Unit) {
 @Composable
 fun StepTitle(titulo: String, descripcion: String) {
     Column(modifier = Modifier.padding(bottom = 20.dp)) {
-        Text(titulo, fontWeight = FontWeight.ExtraBold, fontSize = 18.sp, color = Color(0xFF1A1C1E))
-        Text(descripcion, style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+        Text(titulo, fontWeight = FontWeight.ExtraBold, fontSize = 18.sp, color = TextPrimary)
+        Text(descripcion, style = MaterialTheme.typography.bodySmall, color = TextSecondary)
     }
 }
 
@@ -610,7 +612,7 @@ fun FormField(
             text = label,
             style = MaterialTheme.typography.labelMedium,
             fontWeight = FontWeight.SemiBold,
-            color = Color(0xFF455A64),
+            color = TextSecondary,
             modifier = Modifier.padding(bottom = 6.dp)
         )
         content()
@@ -627,14 +629,14 @@ fun CampoTexto(
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
-        placeholder = { Text(placeholder, color = Color.LightGray, fontSize = 14.sp) },
+        placeholder = { Text(placeholder, color = OutlineGray, fontSize = 14.sp) },
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
         singleLine = true,
         keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
         colors = OutlinedTextFieldDefaults.colors(
             focusedBorderColor = MaterialTheme.colorScheme.primary,
-            unfocusedBorderColor = Color.LightGray,
+            unfocusedBorderColor = OutlineGray,
             focusedContainerColor = Color.White,
             unfocusedContainerColor = Color.White
         )
@@ -659,7 +661,7 @@ fun MenuDesplegable(
             value = seleccionado,
             onValueChange = {},
             readOnly = true,
-            placeholder = { Text(placeholder, color = Color.LightGray, fontSize = 14.sp) },
+            placeholder = { Text(placeholder, color = OutlineGray, fontSize = 14.sp) },
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandido) },
             modifier = Modifier
                 .fillMaxWidth()
@@ -667,7 +669,7 @@ fun MenuDesplegable(
             shape = RoundedCornerShape(12.dp),
             colors = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor = MaterialTheme.colorScheme.primary,
-                unfocusedBorderColor = Color.LightGray,
+                unfocusedBorderColor = OutlineGray,
                 focusedContainerColor = Color.White,
                 unfocusedContainerColor = Color.White
             )
@@ -696,14 +698,14 @@ fun InfoCard(mensaje: String) {
             .fillMaxWidth()
             .padding(bottom = 16.dp),
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFFFF8E1)),
+        colors = CardDefaults.cardColors(containerColor = WarningSoft),
         elevation = CardDefaults.cardElevation(0.dp)
     ) {
         Text(
             text = "ℹ $mensaje",
             modifier = Modifier.padding(12.dp),
             style = MaterialTheme.typography.bodySmall,
-            color = Color(0xFFF57F17)
+            color = WarningDark
         )
     }
 }
@@ -716,7 +718,7 @@ fun ResumenFila(label: String, valor: String) {
             .padding(vertical = 2.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(label, fontSize = 12.sp, color = Color.Gray)
-        Text(valor, fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = Color(0xFF1A1C1E))
+        Text(label, fontSize = 12.sp, color = TextSecondary)
+        Text(valor, fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary)
     }
 }

@@ -1,5 +1,7 @@
 package com.daniel.vitaldispense.features.home
 
+import com.daniel.vitaldispense.ui.theme.*
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -58,7 +60,7 @@ fun HomeScreen(
         ProximaDosis("12:00", "112", "Sofía Martín",  "Vitamina D 1000UI",  EstadoDosis.PENDIENTE)
     )
 
-    Scaffold(containerColor = Color(0xFFF5F6FA)) { padding ->
+    Scaffold(containerColor = BackgroundSecondary) { padding ->
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
@@ -80,18 +82,18 @@ fun HomeScreen(
                             text = "Estación de Enfermería",
                             style = MaterialTheme.typography.headlineSmall,
                             fontWeight = FontWeight.ExtraBold,
-                            color = Color(0xFF1A1C1E)
+                            color = TextPrimary
                         )
                         Text(
                             text = "Sala B · Ala Norte · Turno Matutino",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = Color(0xFF1976D2),
+                            color = BrandPrimary,
                             fontWeight = FontWeight.Medium
                         )
                     }
                     BadgedBox(
                         badge = {
-                            Badge(containerColor = Color(0xFFD32F2F)) {
+                            Badge(containerColor = ErrorRed) {
                                 Text("${alertas.count { it.esCritica }}")
                             }
                         }
@@ -103,7 +105,7 @@ fun HomeScreen(
                             Icon(
                                 Icons.Default.Notifications,
                                 contentDescription = "Notificaciones",
-                                tint = Color(0xFF1976D2)
+                                tint = BrandPrimary
                             )
                         }
                     }
@@ -122,25 +124,25 @@ fun HomeScreen(
                     ResumenCard(
                         label = "Pacientes",
                         valor = "8",
-                        color = Color(0xFF1976D2),
+                        color = BrandPrimary,
                         modifier = Modifier.weight(1f)
                     )
                     ResumenCard(
                         label = "Alertas",
                         valor = "${alertas.count { it.esCritica }}",
-                        color = Color(0xFFD32F2F),
+                        color = ErrorRed,
                         modifier = Modifier.weight(1f)
                     )
                     ResumenCard(
                         label = "Completadas",
                         valor = "${proximasDosis.count { it.estado == EstadoDosis.COMPLETADA }}",
-                        color = Color(0xFF2E7D32),
+                        color = SuccessDark,
                         modifier = Modifier.weight(1f)
                     )
                     ResumenCard(
                         label = "Pendientes",
                         valor = "${proximasDosis.count { it.estado == EstadoDosis.PENDIENTE }}",
-                        color = Color(0xFFFFA726),
+                        color = WarningOrange,
                         modifier = Modifier.weight(1f)
                     )
                 }
@@ -192,16 +194,16 @@ fun ResumenCard(label: String, valor: String, color: Color, modifier: Modifier =
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(valor, fontSize = 22.sp, fontWeight = FontWeight.ExtraBold, color = color)
-            Text(label, style = MaterialTheme.typography.labelSmall, color = Color.Gray)
+            Text(label, style = MaterialTheme.typography.labelSmall, color = TextSecondary)
         }
     }
 }
 
 @Composable
 fun AlertaCamaCard(alerta: AlertaCama) {
-    val bgColor = if (alerta.esCritica) Color(0xFFFFEBEE) else Color(0xFFFFF8E1)
-    val borderColor = if (alerta.esCritica) Color(0xFFD32F2F) else Color(0xFFFFA726)
-    val textColor = if (alerta.esCritica) Color(0xFFD32F2F) else Color(0xFFF57F17)
+    val bgColor = if (alerta.esCritica) ErrorSoft else WarningSoft
+    val borderColor = if (alerta.esCritica) ErrorRed else WarningOrange
+    val textColor = if (alerta.esCritica) ErrorRed else WarningDark
 
     Card(
         modifier = Modifier
@@ -234,7 +236,7 @@ fun AlertaCamaCard(alerta: AlertaCama) {
                     text = "Cama ${alerta.cama} · ${alerta.paciente}",
                     fontWeight = FontWeight.Bold,
                     fontSize = 14.sp,
-                    color = Color(0xFF1A1C1E)
+                    color = TextPrimary
                 )
                 Text(
                     text = alerta.mensaje,
@@ -250,9 +252,9 @@ fun AlertaCamaCard(alerta: AlertaCama) {
 @Composable
 fun ProximaDosisCard(dosis: ProximaDosis) {
     val (bgColor, estadoColor, estadoLabel) = when (dosis.estado) {
-        EstadoDosis.COMPLETADA -> Triple(Color(0xFFE8F5E9), Color(0xFF2E7D32), "Completada")
-        EstadoDosis.RETRASADA  -> Triple(Color(0xFFFFEBEE), Color(0xFFD32F2F), "Retrasada")
-        EstadoDosis.PENDIENTE  -> Triple(Color(0xFFF0F7FF), Color(0xFF1976D2), "Pendiente")
+        EstadoDosis.COMPLETADA -> Triple(SuccessSoft, SuccessDark, "Completada")
+        EstadoDosis.RETRASADA  -> Triple(ErrorSoft, ErrorRed, "Retrasada")
+        EstadoDosis.PENDIENTE  -> Triple(PrimarySoft, BrandPrimary, "Pendiente")
     }
 
     Card(
@@ -269,7 +271,7 @@ fun ProximaDosisCard(dosis: ProximaDosis) {
         ) {
             // Hora
             Surface(
-                color = Color(0xFFF0F7FF),
+                color = PrimarySoft,
                 shape = RoundedCornerShape(10.dp)
             ) {
                 Text(
@@ -277,7 +279,7 @@ fun ProximaDosisCard(dosis: ProximaDosis) {
                     modifier = Modifier.padding(horizontal = 10.dp, vertical = 8.dp),
                     fontWeight = FontWeight.ExtraBold,
                     fontSize = 13.sp,
-                    color = Color(0xFF1976D2)
+                    color = BrandPrimary
                 )
             }
             Spacer(modifier = Modifier.width(12.dp))
@@ -286,12 +288,12 @@ fun ProximaDosisCard(dosis: ProximaDosis) {
                     text = dosis.medicamento,
                     fontWeight = FontWeight.Bold,
                     fontSize = 14.sp,
-                    color = Color(0xFF1A1C1E)
+                    color = TextPrimary
                 )
                 Text(
                     text = "Cama ${dosis.cama} · ${dosis.paciente}",
                     fontSize = 12.sp,
-                    color = Color.Gray
+                    color = TextSecondary
                 )
             }
             Surface(
@@ -317,6 +319,6 @@ fun SectionHeader(titulo: String, modifier: Modifier = Modifier) {
         modifier = modifier,
         style = MaterialTheme.typography.titleMedium,
         fontWeight = FontWeight.Bold,
-        color = Color(0xFF1A1C1E)
+        color = TextPrimary
     )
 }

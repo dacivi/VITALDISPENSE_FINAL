@@ -1,5 +1,7 @@
 package com.daniel.vitaldispense.features.dispensador
 
+import com.daniel.vitaldispense.ui.theme.*
+
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
@@ -280,12 +282,12 @@ fun DispensadorScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-    val backgroundColor = Color(0xFFF5F6FA)
-    val primaryBlue = Color(0xFF1976D2)
-    val darkTitle = Color(0xFF1A1C1E)
-    val successGreen = Color(0xFF2E7D32)
-    val criticalRed = Color(0xFFD32F2F)
-    val warningAmber = Color(0xFFFFA726)
+    val backgroundColor = BackgroundSecondary
+    val primaryBlue = BrandPrimary
+    val darkTitle = TextPrimary
+    val successGreen = SuccessDark
+    val criticalRed = ErrorRed
+    val warningAmber = WarningOrange
 
     Scaffold(containerColor = backgroundColor) { padding ->
         LazyColumn(
@@ -385,7 +387,7 @@ fun DispensadorScreen(
             if (uiState.mensajeNotificacion != null) {
                 item {
                     val esAlerta = uiState.mensajeNotificacion?.contains("ALERTA") == true
-                    val bgColor = if (esAlerta) Color(0xFFFFEBEE) else Color(0xFFE8F5E9)
+                    val bgColor = if (esAlerta) ErrorSoft else SuccessSoft
                     val borderColor = if (esAlerta) criticalRed else successGreen
 
                     Card(
@@ -462,7 +464,7 @@ fun DispensadorScreen(
                                 Text(
                                     text = "Día del Carrusel",
                                     fontSize = 12.sp,
-                                    color = Color.Gray,
+                                    color = TextSecondary,
                                     fontWeight = FontWeight.Medium
                                 )
                             }
@@ -476,7 +478,7 @@ fun DispensadorScreen(
                             Text(
                                 text = "Posición ${uiState.diaIndex + 1} de 7",
                                 fontSize = 11.sp,
-                                color = Color.Gray
+                                color = TextSecondary
                             )
                             Spacer(modifier = Modifier.height(8.dp))
                             LinearProgressIndicator(
@@ -486,7 +488,7 @@ fun DispensadorScreen(
                                     .height(6.dp)
                                     .clip(RoundedCornerShape(3.dp)),
                                 color = primaryBlue,
-                                trackColor = Color(0xFFE0E0E0)
+                                trackColor = DividerGray
                             )
                         }
                     }
@@ -518,7 +520,7 @@ fun DispensadorScreen(
                                 Text(
                                     text = "Compuerta",
                                     fontSize = 12.sp,
-                                    color = Color.Gray,
+                                    color = TextSecondary,
                                     fontWeight = FontWeight.Medium
                                 )
                             }
@@ -580,7 +582,7 @@ fun DispensadorScreen(
                             shape = RoundedCornerShape(12.dp),
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedBorderColor = primaryBlue,
-                                unfocusedBorderColor = Color(0xFFE0E0E0)
+                                unfocusedBorderColor = DividerGray
                             )
                         )
 
@@ -596,7 +598,7 @@ fun DispensadorScreen(
                             shape = RoundedCornerShape(12.dp),
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedBorderColor = primaryBlue,
-                                unfocusedBorderColor = Color(0xFFE0E0E0)
+                                unfocusedBorderColor = DividerGray
                             )
                         )
                     }
@@ -703,7 +705,7 @@ fun DispensadorScreen(
 
                 item {
                     val isSuccess = registro.pastillaDetectada
-                    val cardBg = if (isSuccess) Color(0xFFE8F5E9) else Color(0xFFFFEBEE)
+                    val cardBg = if (isSuccess) SuccessSoft else ErrorSoft
                     val statusColor = if (isSuccess) successGreen else criticalRed
 
                     Card(
@@ -739,7 +741,7 @@ fun DispensadorScreen(
                             Text(
                                 "• Hora: ${SimpleDateFormat("HH:mm:ss - dd/MM/yyyy", Locale.getDefault()).format(Date(registro.timestamp))}",
                                 fontSize = 11.sp,
-                                color = Color.Gray
+                                color = TextSecondary
                             )
                         }
                     }
@@ -774,7 +776,7 @@ fun ResumenCardDispensador(label: String, valor: String, color: Color, modifier:
             Text(
                 text = label,
                 style = MaterialTheme.typography.labelSmall,
-                color = Color.Gray,
+                color = TextSecondary,
                 fontSize = 10.sp,
                 maxLines = 1
             )
@@ -789,6 +791,6 @@ fun SectionHeaderDispensador(titulo: String, modifier: Modifier = Modifier) {
         modifier = modifier,
         style = MaterialTheme.typography.titleMedium,
         fontWeight = FontWeight.Bold,
-        color = Color(0xFF1A1C1E)
+        color = TextPrimary
     )
 }

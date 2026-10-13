@@ -1,5 +1,7 @@
 package com.daniel.vitaldispense.features.settings
 
+import com.daniel.vitaldispense.ui.theme.*
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -41,7 +43,7 @@ fun SettingsScreen(
         ?.replaceFirstChar { it.uppercase() }
         ?: "Enfermero/a"
 
-    Scaffold(containerColor = Color(0xFFF5F6FA)) { padding ->
+    Scaffold(containerColor = BackgroundSecondary) { padding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -54,7 +56,7 @@ fun SettingsScreen(
                 text = "Perfil",
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold,
-                color = Color(0xFF1A1C1E),
+                color = TextPrimary,
                 modifier = Modifier.padding(horizontal = 24.dp, vertical = 28.dp)
             )
 
@@ -65,7 +67,7 @@ fun SettingsScreen(
                     .padding(horizontal = 24.dp),
                 shape = RoundedCornerShape(24.dp),
                 colors = CardDefaults.cardColors(
-                    containerColor = Color(0xFF1976D2)
+                    containerColor = BrandPrimary
                 ),
                 elevation = CardDefaults.cardElevation(4.dp)
             ) {
@@ -137,24 +139,24 @@ fun SettingsScreen(
                     icon = Icons.Default.Person,
                     title = "Mi Perfil",
                     subtitle = "Editar nombre y datos",
-                    iconColor = Color(0xFF1976D2),
-                    iconBgColor = Color(0xFFF0F7FF)
+                    iconColor = BrandPrimary,
+                    iconBgColor = PrimarySoft
                 ) { /* TODO: navegar a editar perfil */ }
 
                 SettingsCard(
                     icon = Icons.Default.Schedule,
                     title = "Mi Turno",
                     subtitle = "Sala B · Ala Norte · Matutino",
-                    iconColor = Color(0xFF1976D2),
-                    iconBgColor = Color(0xFFF0F7FF)
+                    iconColor = BrandPrimary,
+                    iconBgColor = PrimarySoft
                 ) { /* TODO: cambiar turno */ }
 
                 SettingsCard(
                     icon = Icons.Default.Notifications,
                     title = "Notificaciones",
                     subtitle = "Alertas y recordatorios",
-                    iconColor = Color(0xFF1976D2),
-                    iconBgColor = Color(0xFFF0F7FF)
+                    iconColor = BrandPrimary,
+                    iconBgColor = PrimarySoft
                 ) { /* TODO: navegar a notificaciones */ }
             }
 
@@ -176,17 +178,17 @@ fun SettingsScreen(
                     icon = Icons.Default.Mail,
                     title = "Invitaciones",
                     subtitle = "Gestionar acceso al equipo",
-                    iconColor = Color(0xFF7B1FA2),
-                    iconBgColor = Color(0xFFF3E5F5)
+                    iconColor = AccentTeal,
+                    iconBgColor = AccentSoft
                 ) { onInvitacionesClick() }
 
                 SettingsCard(
                     icon = Icons.AutoMirrored.Filled.ExitToApp,
                     title = "Cerrar Sesión",
                     subtitle = "Finalizar turno activo",
-                    iconColor = Color(0xFFD32F2F),
-                    iconBgColor = Color(0xFFFFEBEE),
-                    textColor = Color(0xFFD32F2F)
+                    iconColor = ErrorRed,
+                    iconBgColor = ErrorSoft,
+                    textColor = ErrorRed
                 ) { showLogoutDialog = true }
             }
 
@@ -207,7 +209,7 @@ fun SettingsScreen(
                         auth.signOut()
                         onLogout()
                     }) {
-                        Text("SÍ, SALIR", color = Color(0xFFD32F2F), fontWeight = FontWeight.Bold)
+                        Text("SÍ, SALIR", color = ErrorRed, fontWeight = FontWeight.Bold)
                     }
                 },
                 dismissButton = {
@@ -229,7 +231,7 @@ fun SectionLabel(texto: String, modifier: Modifier = Modifier) {
         modifier = modifier,
         style = MaterialTheme.typography.labelLarge,
         fontWeight = FontWeight.Bold,
-        color = Color.Gray,
+        color = TextSecondary,
         letterSpacing = 0.5.sp
     )
 }
@@ -241,7 +243,7 @@ fun SettingsCard(
     subtitle: String = "",
     iconColor: Color,
     iconBgColor: Color,
-    textColor: Color = Color(0xFF1A1C1E),
+    textColor: Color = TextPrimary,
     onClick: () -> Unit
 ) {
     Card(
@@ -282,14 +284,14 @@ fun SettingsCard(
                     Text(
                         text = subtitle,
                         style = MaterialTheme.typography.bodySmall,
-                        color = Color.Gray
+                        color = TextSecondary
                     )
                 }
             }
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                 contentDescription = null,
-                tint = Color.LightGray
+                tint = OutlineGray
             )
         }
     }

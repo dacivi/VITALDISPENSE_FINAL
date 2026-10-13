@@ -1,5 +1,7 @@
 package com.daniel.vitaldispense.features.hardware
 
+import com.daniel.vitaldispense.ui.theme.*
+
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -97,14 +99,14 @@ fun HardwareContent(
                     title = "Temperatura",
                     value = "${state.sensors.temperature}°C",
                     icon = Icons.Default.Thermostat,
-                    color = Color(0xFFE57373),
+                    color = ErrorRed,
                     modifier = Modifier.weight(1f)
                 )
                 SensorCard(
                     title = "Humedad",
                     value = "$humedadActual%",
                     icon = Icons.Default.WaterDrop,
-                    color = if (humedadActual > 70) Color.Red else Color(0xFF64B5F6),
+                    color = if (humedadActual > 70) ErrorRed else AccentTeal,
                     modifier = Modifier.weight(1f)
                 )
             }
@@ -129,7 +131,7 @@ fun HardwareContent(
 @Composable
 fun StatusCard(isOnline: Boolean, isDispensing: Boolean, onDispenseClick: () -> Unit) {
     val statusColor by animateColorAsState(
-        targetValue = if (isOnline) Color(0xFF4CAF50) else Color.Gray,
+        targetValue = if (isOnline) SuccessGreen else TextSecondary,
         label = "statusColor"
     )
 
@@ -151,7 +153,7 @@ fun StatusCard(isOnline: Boolean, isDispensing: Boolean, onDispenseClick: () -> 
                     text = if (isOnline) "Dispensador en Línea" else "Dispensador Fuera de Línea",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    color = if (isOnline) Color(0xFF2E7D32) else Color.Gray
+                    color = if (isOnline) SuccessDark else TextSecondary
                 )
             }
 
@@ -192,7 +194,7 @@ fun SensorCard(title: String, value: String, icon: ImageVector, color: Color, mo
         Column(modifier = Modifier.padding(16.dp)) {
             Icon(icon, contentDescription = null, tint = color, modifier = Modifier.size(28.dp))
             Spacer(modifier = Modifier.height(12.dp))
-            Text(title, fontSize = 12.sp, color = Color.Gray)
+            Text(title, fontSize = 12.sp, color = TextSecondary)
             Text(value, fontSize = 22.sp, fontWeight = FontWeight.ExtraBold, color = color)
         }
     }
@@ -207,7 +209,7 @@ fun HumidityLineChart(history: List<Float>, currentHumidity: Int) {
         elevation = CardDefaults.cardElevation(2.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text("Historial de Humedad (%)", style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+            Text("Historial de Humedad (%)", style = MaterialTheme.typography.bodySmall, color = TextSecondary)
             Spacer(modifier = Modifier.height(16.dp))
             Canvas(modifier = Modifier.fillMaxSize()) {
                 if (history.size < 2) return@Canvas
@@ -225,7 +227,7 @@ fun HumidityLineChart(history: List<Float>, currentHumidity: Int) {
 
                 drawPath(
                     path = path,
-                    color = if (currentHumidity > 70) Color.Red else Color(0xFF00897B),
+                    color = if (currentHumidity > 70) ErrorRed else AccentTeal,
                     style = Stroke(width = 3.dp.toPx())
                 )
             }
@@ -263,16 +265,16 @@ fun CompartimentoItem(comp: Compartimento) {
             Spacer(modifier = Modifier.width(16.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text(comp.medicamento, fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                Text("${comp.dosis} • En stock: ${comp.cantidad}", fontSize = 13.sp, color = Color.Gray)
+                Text("${comp.dosis} • En stock: ${comp.cantidad}", fontSize = 13.sp, color = TextSecondary)
             }
             if (isLowStock) {
                 Surface(
-                    color = Color(0xFFFFEBEE),
+                    color = ErrorSoft,
                     shape = RoundedCornerShape(8.dp)
                 ) {
                     Text(
                         "Stock Bajo",
-                        color = Color.Red,
+                        color = ErrorRed,
                         fontSize = 10.sp,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
@@ -286,8 +288,8 @@ fun CompartimentoItem(comp: Compartimento) {
 @Composable
 fun SectionHeader(title: String, icon: ImageVector) {
     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(vertical = 8.dp)) {
-        Icon(icon, contentDescription = null, tint = Color.Gray, modifier = Modifier.size(18.dp))
+        Icon(icon, contentDescription = null, tint = TextSecondary, modifier = Modifier.size(18.dp))
         Spacer(modifier = Modifier.width(8.dp))
-        Text(title, fontSize = 14.sp, fontWeight = FontWeight.Bold, color = Color.Gray)
+        Text(title, fontSize = 14.sp, fontWeight = FontWeight.Bold, color = TextSecondary)
     }
 }

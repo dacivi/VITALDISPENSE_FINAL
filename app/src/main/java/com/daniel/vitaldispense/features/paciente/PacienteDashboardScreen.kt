@@ -1,5 +1,7 @@
 package com.daniel.vitaldispense.features.paciente
 
+import com.daniel.vitaldispense.ui.theme.*
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -39,7 +41,7 @@ fun PacienteDashboardScreen(
     )
 
     Scaffold(
-        containerColor = Color(0xFFF8F9FB)
+        containerColor = BackgroundSecondary
     ) { padding ->
         LazyColumn(
             modifier = Modifier
@@ -57,12 +59,12 @@ fun PacienteDashboardScreen(
                         text = "Monitor de Pacientes",
                         style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.ExtraBold,
-                        color = Color(0xFF1A1C1E)
+                        color = TextPrimary
                     )
                     Text(
                         text = "Sala B - Ala Norte",
                         style = MaterialTheme.typography.bodyMedium,
-                        color = Color(0xFF1976D2),
+                        color = BrandPrimary,
                         fontWeight = FontWeight.Bold
                     )
                 }
@@ -77,9 +79,9 @@ fun PacienteDashboardScreen(
                         .padding(start = 24.dp, end = 24.dp, bottom = 24.dp),
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    ResumenSalaCard("Activos", "4", Color(0xFF1976D2), Modifier.weight(1f))
-                    ResumenSalaCard("Alertas", "2", Color(0xFFD32F2F), Modifier.weight(1f))
-                    ResumenSalaCard("Libres", "1", Color(0xFF4CAF50), Modifier.weight(1f))
+                    ResumenSalaCard("Activos", "4", BrandPrimary, Modifier.weight(1f))
+                    ResumenSalaCard("Alertas", "2", ErrorRed, Modifier.weight(1f))
+                    ResumenSalaCard("Libres", "1", SuccessGreen, Modifier.weight(1f))
                 }
             }
 
@@ -121,7 +123,7 @@ fun PacienteCamaItem(pac: EstadoPaciente, onClick: () -> Unit) {
                 modifier = Modifier
                     .size(50.dp)
                     .background(
-                        if (pac.esCritico) Color(0xFFFFEBEE) else Color(0xFFF0F7FF),
+                        if (pac.esCritico) ErrorSoft else PrimarySoft,
                         RoundedCornerShape(14.dp)
                     ),
                 contentAlignment = Alignment.Center
@@ -129,7 +131,7 @@ fun PacienteCamaItem(pac: EstadoPaciente, onClick: () -> Unit) {
                 Text(
                     text = pac.cama,
                     fontWeight = FontWeight.Bold,
-                    color = if (pac.esCritico) Color(0xFFD32F2F) else Color(0xFF1976D2)
+                    color = if (pac.esCritico) ErrorRed else BrandPrimary
                 )
             }
 
@@ -144,7 +146,7 @@ fun PacienteCamaItem(pac: EstadoPaciente, onClick: () -> Unit) {
                 Text(
                     text = if (pac.proximaDosis == "-") "Sin rondas" else "Próxima: ${pac.proximaDosis}",
                     fontSize = 12.sp,
-                    color = Color.Gray
+                    color = TextSecondary
                 )
             }
 
@@ -153,7 +155,7 @@ fun PacienteCamaItem(pac: EstadoPaciente, onClick: () -> Unit) {
                     Icon(
                         Icons.Default.Warning,
                         contentDescription = null,
-                        tint = Color(0xFFD32F2F),
+                        tint = ErrorRed,
                         modifier = Modifier.size(16.dp)
                     )
                 }
@@ -162,16 +164,16 @@ fun PacienteCamaItem(pac: EstadoPaciente, onClick: () -> Unit) {
                     style = MaterialTheme.typography.labelSmall,
                     fontWeight = FontWeight.Bold,
                     color = when (pac.estado) {
-                        "Retrasado" -> Color(0xFFD32F2F)
-                        "Completado" -> Color(0xFF2E7D32)
-                        "Disponible" -> Color(0xFF4CAF50)
-                        else -> Color(0xFFFFA726)
+                        "Retrasado" -> ErrorRed
+                        "Completado" -> SuccessDark
+                        "Disponible" -> SuccessGreen
+                        else -> WarningOrange
                     }
                 )
             }
             
             Spacer(modifier = Modifier.width(8.dp))
-            Icon(Icons.Default.ChevronRight, contentDescription = null, tint = Color.LightGray)
+            Icon(Icons.Default.ChevronRight, contentDescription = null, tint = OutlineGray)
         }
     }
 }
@@ -189,7 +191,7 @@ fun ResumenSalaCard(label: String, value: String, color: Color, modifier: Modifi
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(text = value, fontSize = 22.sp, fontWeight = FontWeight.Bold, color = color)
-            Text(text = label, style = MaterialTheme.typography.labelSmall, color = Color.Gray)
+            Text(text = label, style = MaterialTheme.typography.labelSmall, color = TextSecondary)
         }
     }
 }

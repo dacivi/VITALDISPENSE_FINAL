@@ -1,5 +1,7 @@
 package com.daniel.vitaldispense.features.pacientes
 
+import com.daniel.vitaldispense.ui.theme.*
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -106,8 +108,8 @@ fun DetallePacienteScreen(
                         .background(
                             Brush.verticalGradient(
                                 listOf(
-                                    Color(0xFF1565C0),
-                                    Color(0xFF1976D2)
+                                    BrandPrimary,
+                                    BrandSecondary
                                 )
                             ),
                             RoundedCornerShape(bottomStart = 32.dp, bottomEnd = 32.dp)
@@ -155,7 +157,7 @@ fun DetallePacienteScreen(
                             .padding(horizontal = 24.dp)
                             .padding(top = 20.dp),
                         shape = RoundedCornerShape(16.dp),
-                        colors = CardDefaults.cardColors(containerColor = Color(0xFFFFEBEE)),
+                        colors = CardDefaults.cardColors(containerColor = ErrorSoft),
                         elevation = CardDefaults.cardElevation(0.dp)
                     ) {
                         Row(
@@ -165,13 +167,13 @@ fun DetallePacienteScreen(
                             Box(
                                 modifier = Modifier
                                     .size(40.dp)
-                                    .background(Color(0xFFD32F2F).copy(alpha = 0.15f), CircleShape),
+                                    .background(ErrorRed.copy(alpha = 0.15f), CircleShape),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Icon(
                                     Icons.Default.Warning,
                                     contentDescription = null,
-                                    tint = Color(0xFFD32F2F),
+                                    tint = ErrorRed,
                                     modifier = Modifier.size(22.dp)
                                 )
                             }
@@ -181,14 +183,14 @@ fun DetallePacienteScreen(
                                     "⚠ ALERGIAS CONOCIDAS",
                                     fontWeight = FontWeight.ExtraBold,
                                     fontSize = 12.sp,
-                                    color = Color(0xFFD32F2F),
+                                    color = ErrorRed,
                                     letterSpacing = 0.5.sp
                                 )
                                 Text(
                                     paciente.alergias ?: "",
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 15.sp,
-                                    color = Color(0xFF1A1C1E)
+                                    color = TextPrimary
                                 )
                             }
                         }
@@ -245,7 +247,7 @@ fun DetallePacienteScreen(
                     Icon(
                         Icons.Default.Medication,
                         contentDescription = null,
-                        tint = Color(0xFF1976D2),
+                        tint = BrandPrimary,
                         modifier = Modifier.size(18.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
@@ -253,7 +255,7 @@ fun DetallePacienteScreen(
                         "Esquema de Medicación",
                         fontWeight = FontWeight.Bold,
                         fontSize = 15.sp,
-                        color = Color(0xFF1A1C1E)
+                        color = TextPrimary
                     )
                 }
             }
@@ -291,13 +293,13 @@ fun SeccionDetalle(
                 Box(
                     modifier = Modifier
                         .size(32.dp)
-                        .background(Color(0xFFF0F7FF), CircleShape),
+                        .background(PrimarySoft, CircleShape),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         icono,
                         contentDescription = null,
-                        tint = Color(0xFF1976D2),
+                        tint = BrandPrimary,
                         modifier = Modifier.size(18.dp)
                     )
                 }
@@ -306,7 +308,7 @@ fun SeccionDetalle(
                     titulo,
                     fontWeight = FontWeight.Bold,
                     fontSize = 14.sp,
-                    color = Color(0xFF1976D2)
+                    color = BrandPrimary
                 )
             }
             contenido()
@@ -320,19 +322,19 @@ fun FilaDetalle(label: String, valor: String, multilinea: Boolean = false) {
         Text(
             label,
             style = MaterialTheme.typography.labelSmall,
-            color = Color.Gray
+            color = TextSecondary
         )
         Text(
             valor,
             style = MaterialTheme.typography.bodyMedium,
             fontWeight = FontWeight.SemiBold,
-            color = Color(0xFF1A1C1E),
+            color = TextPrimary,
             softWrap = multilinea,
             maxLines = if (multilinea) Int.MAX_VALUE else 1
         )
         HorizontalDivider(
             modifier = Modifier.padding(top = 8.dp),
-            color = Color(0xFFF0F0F0)
+            color = DividerGray
         )
     }
 }
@@ -354,13 +356,13 @@ fun MedicamentoCard(med: MedicamentoPaciente) {
             Box(
                 modifier = Modifier
                     .size(44.dp)
-                    .background(Color(0xFFF0F7FF), RoundedCornerShape(12.dp)),
+                    .background(PrimarySoft, RoundedCornerShape(12.dp)),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     Icons.Default.MedicalServices,
                     contentDescription = null,
-                    tint = Color(0xFF1976D2),
+                    tint = BrandPrimary,
                     modifier = Modifier.size(22.dp)
                 )
             }
@@ -370,19 +372,19 @@ fun MedicamentoCard(med: MedicamentoPaciente) {
                     med.nombre,
                     fontWeight = FontWeight.Bold,
                     fontSize = 14.sp,
-                    color = Color(0xFF1A1C1E)
+                    color = TextPrimary
                 )
                 Text(
                     "${med.dosis} · ${med.frecuencia}",
                     fontSize = 12.sp,
-                    color = Color.Gray
+                    color = TextSecondary
                 )
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(6.dp),
                     modifier = Modifier.padding(top = 4.dp)
                 ) {
-                    ChipInfo(med.compartimento, Color(0xFF7B1FA2), Color(0xFFF3E5F5))
-                    ChipInfo("Próx: ${med.proximaDosis}", Color(0xFF1976D2), Color(0xFFF0F7FF))
+                    ChipInfo(med.compartimento, AccentTeal, AccentSoft)
+                    ChipInfo("Próx: ${med.proximaDosis}", BrandPrimary, PrimarySoft)
                 }
             }
         }
