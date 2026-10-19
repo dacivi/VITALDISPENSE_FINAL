@@ -383,7 +383,7 @@ fun MedicamentoCard(med: MedicamentoPaciente) {
                     horizontalArrangement = Arrangement.spacedBy(6.dp),
                     modifier = Modifier.padding(top = 4.dp)
                 ) {
-                    ChipInfo(med.compartimento, AccentTeal, AccentSoft)
+                    ChipInfo(med.compartimento, PrimarySoft, BrandPrimary)
                     ChipInfo("Próx: ${med.proximaDosis}", BrandPrimary, PrimarySoft)
                 }
             }

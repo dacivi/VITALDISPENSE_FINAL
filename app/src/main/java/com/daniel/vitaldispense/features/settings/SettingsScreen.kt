@@ -31,11 +31,14 @@ import com.google.firebase.auth.FirebaseAuth
 @Composable
 fun SettingsScreen(
     onLogout: () -> Unit,
-    onInvitacionesClick: () -> Unit = {}
+    onInvitacionesClick: () -> Unit = {},
+    onNotificacionesClick: () -> Unit = {}
 ) {
     val auth = FirebaseAuth.getInstance()
     val user = auth.currentUser
     var showLogoutDialog by remember { mutableStateOf(false) }
+    var showPerfilDialog by remember { mutableStateOf(false) }
+    var showTurnoDialog by remember { mutableStateOf(false) }
 
     // Obtener nombre del usuario (antes del @)
     val nombreUsuario = user?.email
@@ -64,7 +67,8 @@ fun SettingsScreen(
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 24.dp),
+                    .padding(horizontal = 24.dp)
+                    .clickable { showPerfilDialog = true },
                 shape = RoundedCornerShape(24.dp),
                 colors = CardDefaults.cardColors(
                     containerColor = BrandPrimary
@@ -135,29 +139,32 @@ fun SettingsScreen(
                     .padding(horizontal = 24.dp),
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
+                // 1. Mi Perfil (Muestra información completa de la cuenta)
                 SettingsCard(
                     icon = Icons.Default.Person,
                     title = "Mi Perfil",
-                    subtitle = "Editar nombre y datos",
+                    subtitle = "Ver datos de la cuenta y usuario",
                     iconColor = BrandPrimary,
                     iconBgColor = PrimarySoft
-                ) { /* TODO: navegar a editar perfil */ }
+                ) { showPerfilDialog = true }
 
+                // 2. Mi Turno (Muestra número de sala, ubicación y turno)
                 SettingsCard(
                     icon = Icons.Default.Schedule,
                     title = "Mi Turno",
                     subtitle = "Sala B · Ala Norte · Matutino",
                     iconColor = BrandPrimary,
                     iconBgColor = PrimarySoft
-                ) { /* TODO: cambiar turno */ }
+                ) { showTurnoDialog = true }
 
+                // 3. Notificaciones (Conecta con NotificationsScreen)
                 SettingsCard(
                     icon = Icons.Default.Notifications,
                     title = "Notificaciones",
-                    subtitle = "Alertas y recordatorios",
+                    subtitle = "Alertas y recordatorios en tiempo real",
                     iconColor = BrandPrimary,
                     iconBgColor = PrimarySoft
-                ) { /* TODO: navegar a notificaciones */ }
+                ) { onNotificacionesClick() }
             }
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -178,8 +185,8 @@ fun SettingsScreen(
                     icon = Icons.Default.Mail,
                     title = "Invitaciones",
                     subtitle = "Gestionar acceso al equipo",
-                    iconColor = AccentTeal,
-                    iconBgColor = AccentSoft
+                    iconColor = BrandPrimary,
+                    iconBgColor = PrimarySoft
                 ) { onInvitacionesClick() }
 
                 SettingsCard(
@@ -195,7 +202,113 @@ fun SettingsScreen(
             Spacer(modifier = Modifier.height(100.dp))
         }
 
-        // ── Diálogo de cierre de sesión ───────────────────────────────────────
+        // ── Diálogo 1: Información de Mi Perfil ───────────────────────────────
+        if (showPerfilDialog) {
+            AlertDialog(
+                onDismissRequest = { showPerfilDialog = false },
+                confirmButton = {
+                    TextButton(onClick = { showPerfilDialog = false }) {
+                        Text("CERRAR", color = BrandPrimary, fontWeight = FontWeight.Bold)
+                    }
+                },
+                icon = {
+                    Box(
+                        modifier = Modifier
+                            .size(56.dp)
+                            .clip(CircleShape)
+                            .background(PrimarySoft),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Person,
+                            contentDescription = null,
+                            tint = BrandPrimary,
+                            modifier = Modifier.size(32.dp)
+                        )
+                    }
+                },
+                title = {
+                    Text(
+                        text = "Datos de la Cuenta",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = TextPrimary
+                    )
+                },
+                text = {
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        InfoRowItem(label = "Nombre de Usuario", valor = nombreUsuario)
+                        InfoRowItem(label = "Correo Electrónico", valor = user?.email ?: "Sin correo")
+                        InfoRowItem(label = "Rol en la App", valor = "Enfermero/a Titular")
+                        InfoRowItem(
+                            label = "UID de Firebase",
+                            valor = user?.uid?.take(20)?.plus("...") ?: "Anon-Firebase"
+                        )
+                        InfoRowItem(
+                            label = "Estado de Verificación",
+                            valor = if (user?.isEmailVerified == true) "Verificado ✓" else "Cuenta Activa"
+                        )
+                    }
+                },
+                shape = RoundedCornerShape(24.dp),
+                containerColor = Color.White
+            )
+        }
+
+        // ── Diálogo 2: Información de Mi Turno ────────────────────────────────
+        if (showTurnoDialog) {
+            AlertDialog(
+                onDismissRequest = { showTurnoDialog = false },
+                confirmButton = {
+                    TextButton(onClick = { showTurnoDialog = false }) {
+                        Text("ENTENDIDO", color = BrandPrimary, fontWeight = FontWeight.Bold)
+                    }
+                },
+                icon = {
+                    Box(
+                        modifier = Modifier
+                            .size(56.dp)
+                            .clip(CircleShape)
+                            .background(PrimarySoft),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Schedule,
+                            contentDescription = null,
+                            tint = BrandPrimary,
+                            modifier = Modifier.size(32.dp)
+                        )
+                    }
+                },
+                title = {
+                    Text(
+                        text = "Información del Turno",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = TextPrimary
+                    )
+                },
+                text = {
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        InfoRowItem(label = "Número de Sala Asignada", valor = "Sala B (Camas 101 - 112)")
+                        InfoRowItem(label = "Ubicación de la Sala", valor = "Ala Norte · Piso 2 · Edificio Central")
+                        InfoRowItem(label = "Turno Correspondiente", valor = "Turno Matutino (07:00 AM - 15:00 PM)")
+                        InfoRowItem(label = "Estación Asignada", valor = "Estación Principal de Enfermería")
+                        InfoRowItem(label = "Responsable", valor = nombreUsuario)
+                    }
+                },
+                shape = RoundedCornerShape(24.dp),
+                containerColor = Color.White
+            )
+        }
+
+        // ── Diálogo 3: Cierre de sesión ───────────────────────────────────────
         if (showLogoutDialog) {
             AlertDialog(
                 onDismissRequest = { showLogoutDialog = false },
@@ -222,7 +335,28 @@ fun SettingsScreen(
     }
 }
 
-// ── Componentes ───────────────────────────────────────────────────────────────
+// ── Componentes Secundarios ───────────────────────────────────────────────────
+
+@Composable
+fun InfoRowItem(label: String, valor: String) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Text(
+            text = label,
+            fontSize = 11.sp,
+            fontWeight = FontWeight.Medium,
+            color = TextSecondary
+        )
+        Spacer(modifier = Modifier.height(2.dp))
+        Text(
+            text = valor,
+            fontSize = 14.sp,
+            fontWeight = FontWeight.SemiBold,
+            color = TextPrimary
+        )
+        Spacer(modifier = Modifier.height(6.dp))
+        HorizontalDivider(color = Color(0xFFF0F0F0))
+    }
+}
 
 @Composable
 fun SectionLabel(texto: String, modifier: Modifier = Modifier) {

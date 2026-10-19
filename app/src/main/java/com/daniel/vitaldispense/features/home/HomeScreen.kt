@@ -134,7 +134,7 @@ fun HomeScreen(
                         modifier = Modifier.weight(1f)
                     )
                     ResumenCard(
-                        label = "Completadas",
+                        label = "Concluido",
                         valor = "${proximasDosis.count { it.estado == EstadoDosis.COMPLETADA }}",
                         color = SuccessDark,
                         modifier = Modifier.weight(1f)

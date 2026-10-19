@@ -106,6 +106,9 @@ fun NavGraph(navController: NavHostController) {
                 },
                 onInvitacionesClick = {
                     navController.navigate(Screen.Invitaciones.route)
+                },
+                onNotificacionesClick = {
+                    navController.navigate(Screen.Alertas.route)
                 }
             )
         }
